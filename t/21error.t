@@ -18,23 +18,41 @@
 
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
-WriteMakefile(
-    NAME          => 'Enbugger',
-    VERSION_FROM  => 'lib/Enbugger.pm',
-    ABSTRACT_FROM => 'lib/Enbugger.pod',
-    AUTHOR        => 'WhitePages.com, Inc <whitepage@cpan.org>',
-    LICENSE       => 'perl',
-    PREREQ_PM     => {
-		      'Test::More' => 0,
-		      'B::Utils' => 0,
-		     },
-    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Enbugger-*' },
-);
+use Test::More tests => 2;
+
+=head1 DESCRIPTION
+
+This is a basic test that OnError ignores an eval wrapped die().
+
+=cut
+
+
+
+
+use vars qw( $Caught );
+BEGIN {
+    {
+	no warnings 'once';
+	@DB::typeahead = ('$main::Caught = 1','c');
+    }
+}
+use Enbugger::OnError;
+
+my $ok = eval {
+     die "An exception.\n";
+     return 1;
+};
+isnt( $ok, 'Eval died' );
+isnt( $main::Caught, q(Didn't trigger the debugger for the exception) );
+
+
+
+=begin emacs
 
 ## Local Variables:
 ## mode: cperl
 ## mode: auto-fill
 ## cperl-indent-level: 4
 ## End:
+
+=end emacs

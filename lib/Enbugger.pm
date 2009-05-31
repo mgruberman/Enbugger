@@ -1,205 +1,435 @@
 package Enbugger;
 
-use strict;
+# COPYRIGHT AND LICENCE
+#
+# Copyright (C) 2007,2008 WhitePages.com, Inc. with primary
+# development by Joshua ben Jore.
+#
+# This program is distributed WITHOUT ANY WARRANTY, including but not
+# limited to the implied warranties of merchantability or fitness for
+# a particular purpose.
+#
+# The program is free software.  You may distribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation (either version 2 or any later version)
+# and the Perl Artistic License as published by O’Reilly Media, Inc.
+# Please open the files named gpl-2.0.txt and Artistic for a copy of
+# these licenses.
 
-# I don't know the real minimum version. I've gotten failure reports
-# from 5.5 that show it's missing the COP opcodes I'm altering.
-use 5.006_000;
-
-use vars qw( $VERSION $DEBUGGER );
-$VERSION = '1.03';
-
-$DEBUGGER = 'perl5db';
-sub debugger {
-	my $class = shift @_;
-	$DEBUGGER = shift @_ if @_;
-
-	my $debugger_class = "${class}::$DEBUGGER";
-
-	my $debugger_class_file = $debugger_class;
-	$debugger_class_file =~ s#::#/#g;
-	$debugger_class_file .= '.pm';
-	require $debugger_class_file;
-
-	$debugger_class->debugger;
-}
-sub perl5db { shift->debugger( 'perl5db' ) }
-sub ebug    { shift->debugger( 'ebug'    ) }
-sub sdb     { shift->debugger( 'sdb'     ) }
-sub ptkdb   { shift->debugger( 'ptkdb'   ) }
-
-
-sub _load_source {
-    _load_file($0);
-    _load_file($_) for grep {-e} values %INC;
+BEGIN {
+    $VERSION = '2.003';
 }
 
-sub _load_file {
-    my ($file) = @_;
-    return unless -e $file;
+use XSLoader ();
 
-    my $fh;
-    if ( not open $fh, '<', $file ) {
-        warn "Can't open $file for reading: $!";
-        return;
+BEGIN {
+    XSLoader::load( 'Enbugger', $VERSION );
+
+
+    # Provide minimal debugger hooks.
+    #
+    # When perl has debugging enabled, it always calls these functions
+    # at hook points. It dies if they're missing. These stub functions
+    # don't do anything except provide something that will keep perl
+    # from dying from lack of hooks.
+    {
+
+	# Generate needed code for stubs.
+	my $src = "package DB;\n";
+	my $need_stubs;
+	for my $sub (qw( DB sub )) {
+	    my $globref = $DB::{$sub};
+
+	    # Don't try replacing an existing function.
+	    if ( $globref and defined &$globref ) {
+	    }
+	    else {
+		# Generate a stub method.
+		$src .= "sub $sub {};\n";
+		$need_stubs = 1;
+	    }
+	}
+
+	# Create stubs.
+	if ( $need_stubs ) {
+	    $src .= "return 1;\n";
+	    my $ok = eval $src;
+	    die $@ unless $ok;
+	}
     }
 
-    my $symname = "::_<$file";
-    local $/ = "\n";
-    no strict 'refs';    ## no critic
-    @$symname = readline $fh;
-    %$symname = ();
-    $$symname = $symname;
+
+    # Compile and load everything following w/ debugger hooks.
+    #
+    # That is, everything I'm asking to compile now could possibly be
+    # debugged if we do the loading. Most of everything else in the
+    # Enbugger namespace is explicitly removed from the debugger by
+    # making sure it's COP nodes are compiled with "nextstate" instead
+    # of "dbstate" hooks.
+    Enbugger::_compile_with_dbstate();
 }
 
-# Convenience functions to support `use Enbugger' and `no Enbugger'.
-sub import {
-    my $class = shift @_;
-	$DEBUGGER = shift @_ if @_;
 
-	$class->instrument_runtime;
+# I don't know the real minimum version. I've gotten failure
+# reports from 5.5 that show it's missing the COP opcodes I'm
+# altering.
+use 5.006_000;
 
-    my $caller = caller;
-    eval "package $caller; \$class->\$debugger";
-    $DB::single = 2;
+use strict;
+use warnings;
+
+use B::Utils ();
+use Carp;
+
+# Public class settings.
+use vars qw( $DefaultDebugger );
+
+use constant (); # just to load it.
+
+BEGIN {
+    # Compile all of Enbugger:: w/o debugger hooks.
+    Enbugger::_compile_with_nextstate();
 }
 
-sub unimport {
-    $DB::single = 0;
+our( $DEBUGGER, $DEBUGGER_CLASS, %REGISTERED_DEBUGGERS );
+
+
+
+
+######################################################################
+# Public API
+
+BEGIN {
+    my $src = "no warnings 'redefine';\n";
+    for my $sub (qw( stop write )) {
+	$src .= <<"SRC";
+#line @{[__LINE__+1]} "@{[__FILE__]}"
+            sub $sub {
+                my ( \$class ) = \@_;
+
+                # Fetch and install the real implementation.
+                my \$debuggerSubClass = \$class->DEBUGGER_CLASS;
+
+                *Enbugger::$sub = \$debuggerSubClass->can('_${sub}');
+
+                # Redispatch to the implementation.
+                goto &Enbugger::$sub;
+            };
+SRC
+    }
+
+    $src .= "return 1;\n";
+    my $ok = eval $src;
+    die $@ unless $ok;
 }
+
+
+
+
+
+BEGIN { $DefaultDebugger = 'perl5db' }
+
+sub DEBUGGER_CLASS () {
+    unless ( defined $DEBUGGER_CLASS ) {
+	Enbugger->load_debugger;
+    }
+
+    # Install a replacement method that doesn't know how to load
+    # debuggers.
+    #
+    # There's no need to always have a 100% capable function around
+    # once there's no possibility for change.
+    my $ok = eval <<"DEBUGGER_CLASS";
+#line @{[__LINE__]} "@{[__FILE__]}"
+        no warnings 'redefine';
+        sub DEBUGGER_CLASS () {
+            "\Q$DEBUGGER_CLASS\E"
+        }
+        return 1;
+DEBUGGER_CLASS
+
+    die $@ unless $ok;
+
+    goto &Enbugger::DEBUGGER_CLASS;
+}
+
+
+
+
+
+
+
+
+
+sub _stop;
+sub _write;
+sub _load_debugger;
+
+
+
+
+
+
+BEGIN {
+    # There is an automatically registered "null" debugger which is
+    # really just a known empty thing that exists only so I can match
+    # against it and thereby know it can be replaced.
+    $REGISTERED_DEBUGGERS{''} = {
+				null    => 1,
+				symbols => [qw[ sub DB ]],
+			       };
+}
+
+sub load_debugger {
+    my ( $class, $requested_debugger ) = @_;
+
+    # Choose a debugger to load if none was specified.
+    if ( not defined $requested_debugger ) {
+
+	# Don't bother if we've already loaded a debugger.
+	return if $DEBUGGER;
+
+	# Choose the default.
+	$requested_debugger = $DefaultDebugger;
+    }
+
+    # Don't load a debugger if there is one loaded already.
+    #
+    # Enbugger already populates %DB:: with &DB and &sub so I'll check
+    # for something that I didn't create.
+    my %debugger_symbols =
+      map {; $_ => 0b01 }
+	keys %DB::;
+
+
+    # Compare all registered debuggers to our process.
+    my %debugger_matches;
+    for my $debugger ( keys %REGISTERED_DEBUGGERS ) {
+	
+	# Find the intersection vs the difference.
+	my $intersection = 0;
+	my %match = %debugger_symbols;
+	for my $symbol ( @{$REGISTERED_DEBUGGERS{$debugger}{symbols}} ) {
+	    if ( ( $match{$symbol} |= 0b10 ) == 0b11 ) {
+		++ $intersection;
+	    }
+	}
+	
+	# Score.
+	my $difference =
+	  keys(%match) - $intersection;
+	my $score = $difference / $intersection;
+	
+	$debugger_matches{$debugger} = $score;
+    }
+
+    # Select the best matching debugger.
+    my ( $best_debugger ) =
+      sort { $debugger_matches{$a} <=> $debugger_matches{$b} }
+	keys %debugger_matches;
+    
+    
+    # It is ok to replace the null debugger but an error to replace
+    # anything else. Also, there's nothing to do if we've already
+    # loaded the requested debugger.
+    if ( $REGISTERED_DEBUGGERS{$best_debugger}{null} ) {
+    }
+    elsif ( $best_debugger eq $requested_debugger ) {
+	return;
+    }
+    else {
+	Carp::confess("Can't replace the existing $best_debugger debugger with $requested_debugger");
+    }
+
+
+    # Debugger's name -> Debugger's class.
+    $DEBUGGER = $requested_debugger;
+    $DEBUGGER_CLASS = "${class}::$DEBUGGER";
+
+    # Debugger's class -> Debugger's .pm file.
+    my $debugger_class_file = $DEBUGGER_CLASS;
+    $debugger_class_file =~ s#::#/#g;
+    $debugger_class_file .= '.pm';
+
+    # Load the file.
+    #
+    # Be darn sure we're compiling COP nodes with pp_nextstate
+    # instead of pp_dbstate. It sucks to start debugging your
+    # debugger by accident. Incidentally... this is a great place
+    # to hack if you /do/ want to make debugging a debugger a
+    # possibility.
+    Enbugger::_compile_with_nextstate();
+    require $debugger_class_file;
+    $DEBUGGER_CLASS->_load_debugger;
+    Enbugger->instrument_runtime;
+
+
+    # Subsequent compilation will use pp_dbstate like expected.
+    Enbugger::_compile_with_dbstate();
+
+    return;
+}
+
+
+
+
+
+sub _load_debugger;
+
+
+
+
+
+sub register_debugger {
+    my ( $class, $debugger ) = @_;
+    
+    # name -> class
+    my $enbugger_subclass = "Enbugger::$debugger";
+
+    # class -> module file
+    my $enbugger_subclass_file = $enbugger_subclass;
+    $enbugger_subclass_file =~ s<::></>g;
+    $enbugger_subclass_file .= '.pm';
+
+    # Load it.
+    require $enbugger_subclass_file;
+
+
+    my $src = <<"REGISTER_DEBUGGER";
+#line @{[__LINE__]} "@{[__FILE__]}"
+        sub load_$debugger {
+            my ( \$class ) = \@_;
+            \$class->load_debugger( '$debugger' );
+            return;
+        };
+REGISTER_DEBUGGER
+
+    $src .= "return 1;\n";
+    my $ok = eval $src;
+    die $@ unless $ok;
+}
+
+
+
+
+
+sub load_source {
+    my ( $class ) = @_;
+
+    # Load the original program.
+    $class->load_file($0);
+
+    # Load all modules.
+    for ( grep { defined and -e } values %INC ) {
+	$class->load_file($_);
+    }
+
+    return;
+}
+
+
+
+
+
+
+sub load_file {
+    my ($class, $file) = @_;
+    
+    # The symbols by which we'll know ye.
+    my $base_symname = "_<$file";
+    my $symname	  = "main::$base_symname";
+    
+    no strict 'refs';
+
+    if ( not @$symname and -f $file ) {
+	# Read the source.
+	# Open the file.
+	my $fh;
+	if ( not open $fh, '<', $file ) {
+	    Carp::croak( "Can't open $file for reading: $!" );
+	}
+	
+	# TODO: every string here ought to also be a dualvar where the
+	# IV (integer) value is also the pointer to a COP node. I
+	# /guess/ this helps some other things later go vivify breakpoints.
+	local $/ = "\n";
+	@$symname = undef;
+	push @$symname, readline $fh;
+    }
+    
+    $$symname ||= $file;
+    
+    return;
+}
+
+
+
+
+
+
 
 sub instrument_runtime {
-  # Now do the *real* work.
-  my $old_single = $DB::single;
-  $DB::single = 0;
-  
-  # Load the source code for all loaded files. Too bad about (eval 1)
-  # though. This doesn't work. Why not!?!
-  _load_source();
-  
-  B::Utils::walkallops_filtered(
-				sub {
-				  B::Utils::opgrep(
-						   {   name    => 'nextstate',
-						       stashpv => '!DB'
-						   },
-						   @_
-						  );
-				},
-				sub { Enbugger::_alter_cop( $_[0] ) }
-			       );
-  
-  $DB::single = $old_single;
+    # Now do the *real* work.
+    my ( $class ) = @_;
+    
+    # Load the source code for all loaded files. Too bad about (eval 1)
+    # though. This doesn't work. Why not!?!
+    $class->load_source;
+    
+    B::Utils::walkallops_simple( \ &Enbugger::instrument_op );
 }
 
-require XSLoader;
-XSLoader::load( 'Enbugger', $VERSION );
-require B::Utils;
 
-package DB;
-sub DB {}
 
-no warnings 'void';    ## no critic
-'But this is the internet, dear, stupid is one of our prime exports.'
 
-__END__
 
-=head1 NAME
+sub instrument_op {
+    my ( $op ) = @_;
 
-Enbugger - Enables the debugger at runtime.
+    # Must be a B::COP node.
+    if ( $$op and B::class( $op ) eq 'COP' ) {
 
-=head1 SYNOPSIS
+	#print $op->file ."\t".$op->line."\t".$o->stash->NAME."\t";
+	# Disable or enable debugging for this opcode.
+	if ( $op->stash->NAME =~ /^(?=[DE])(?:DB|Enbugger)(?:::|\z)/ ) {
+	    #print 'next';
+	    Enbugger::_nextstate_cop( $op );
+	}
+	else {
+	    Enbugger::_dbstate_cop( $op );
+	}
+    }
+}
 
-  eval { ... };
-  if ( $@ ) {
-      # Oops! there was an error! Enable the debugger now!
-      require Enbugger;
-      $DB::single = 2;
-      Enbugger->debugger;
-  }
 
-=head1 DESCRIPTION
 
-Allows the use of the debugger at runtime regardless of whether your
-process was started with debugging on.
 
-=head2 ENABLING THE DEBUGGER
 
-The debugger is loaded automatically when Enbugger is loaded. Calling
-C<< Enbugger->import >> also enables single stepping. This is optional
-but it seems like a reasonable default.
+sub import {
+    my $class = shift @_;
 
-  # Installs debugging support.
-  require Enbugger;
+    if ( @_ ) {
+	my $selected_debugger = shift @_;
+	$DefaultDebugger = $selected_debugger;
+    }
+}
 
-  # Enables the debugger
-  my $caller = caller;
-  Enbugger->perl5db;
 
-Or...
+BEGIN { __PACKAGE__->register_debugger( 'perl5db' ) }
+# TODO: __PACKAGE__->register_debugger( 'ebug' );
+# TODO: __PACKAGE__->register_debugger( 'sdb' );
+# TODO: __PACKAGE__->register_debugger( 'ptkdb' );
 
-  eval 'use Enbugger';
 
-=head2 DISABLING THE DEBUGGER
+# Anything compiled after this statement runs will be debuggable.
+Enbugger::_compile_with_dbstate();
 
-Disables single stepping.
+## Local Variables:
+## mode: cperl
+## mode: auto-fill
+## cperl-indent-level: 4
+## End:
 
-  Enbugger->unimport;
+no warnings 'void';		## no critic
+'But this is the internet, dear, stupid is one of our prime exports.';
 
-Or...
-
-  eval 'no Enbugger';
-
-=head1 EXAMPLES
-
-=head2 DEBUGGING ON EXCEPTION
-
-Maybe you don't expect anything to die but on the chance you do, you'd
-like to do something about.
-
-  $SIG{__DIE__} = sub {
-      require Enbugger;
-      $DB::single = 3;
-      Enbugger->import( 'ptkdb' );
-  };
-
-=head2 DEBUGGING ON SIGNAL
-
-You could include this snippet in your program and trigger the
-debugger on SIGUSR1. Then later, when you're wondering what's up with
-your process, send it SIGUSR1 and it starts the debugger on itself.
-
-  $SIG{USR1} = sub {
-      require Enbugger;
-      $DB::single = 2;
-      Enbugger->import( 'sdb' );
-  };
-
-Later:
-
-  $ kill -USR1 12345
-
-=head1 INSTALLATION
-
-To install this module type the following:
-
-   perl Makefile.PL
-   make
-   make test
-   make install
-
-=head1 DEPENDENCIES
-
-A C compiler.
-
-=head1 AUTHOR
-
-Josh ben Jore <jjore@cpan.org>
-
-=head1 COPYRIGHT AND LICENCE
-
-Copyright (C) 2007 by Josh ben Jore
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.8 or,
-at your option, any later version of Perl 5 you may have available.

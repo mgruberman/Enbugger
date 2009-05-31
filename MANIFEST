@@ -1,18 +1,27 @@
 Artistic
 Changes
-Copying
-eg/exception
+eg/exception1
+eg/exception2
+eg/on-signal
 Enbugger.xs
+gpl-3.0.txt
 lib/Enbugger.pm
+lib/Enbugger.pod
 lib/Enbugger/ebug.pm
 lib/Enbugger/OnError.pm
 lib/Enbugger/perl5db.pm
 lib/Enbugger/ptkdb.pm
 lib/Enbugger/sdb.pm
 Makefile.PL
-MANIFEST
-META.yml			Module meta-data (added by MakeMaker)
+MANIFEST			This list of files
+META.yml
+ppport.h
 README
+TODO
 t/10load.t
-t/20expect.pl
-t/20expect.t
+t/11load.pl
+t/11load.t
+t/20error.t
+t/21error.t
+t/22signal.t
+t/Test/Enbugger.pm

@@ -16,25 +16,21 @@
 # Please open the files named gpl-2.0.txt and Artistic for a copy of
 # these licenses.
 
-use strict;
-use warnings;
-use ExtUtils::MakeMaker;
-WriteMakefile(
-    NAME          => 'Enbugger',
-    VERSION_FROM  => 'lib/Enbugger.pm',
-    ABSTRACT_FROM => 'lib/Enbugger.pod',
-    AUTHOR        => 'WhitePages.com, Inc <whitepage@cpan.org>',
-    LICENSE       => 'perl',
-    PREREQ_PM     => {
-		      'Test::More' => 0,
-		      'B::Utils' => 0,
-		     },
-    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Enbugger-*' },
-);
+use Enbugger::OnError;
+
+eval {
+    # Should not drop into the debugger. We're in an eval.
+    die 'Oops!';
+};
+
+print "$@\n";
+
+# Should drop into the debugger. We're not in an eval anymore.
+die;
 
 ## Local Variables:
 ## mode: cperl
 ## mode: auto-fill
 ## cperl-indent-level: 4
 ## End:
+
