@@ -3,19 +3,63 @@ package Enbugger;
 use strict;
 
 use vars '$VERSION';
-$VERSION = '0.03';
+$VERSION = '1.00';
 
-# Load the source code for all loaded files. Too bad about (eval 1)
-# though. This doesn't work. Why not!?!
-for my $file ( $0, values %INC ) {
-    next if not -e $file;
-    _load_file($file);
+sub perl5db {
+
+    # Load the main debugger.
+    package DB;
+    my $class = caller;
+    ## no critic eval
+    eval <<"PERL5DB";
+        package $class;
+        require 'perl5db.pl';
+        Enbugger::_load_source();
+PERL5DB
 }
 
-# Load the main debugger.
-my $class = caller;
-eval "package $class; require 'perl5db.pl';";    ## no critic
-_load_file($_) for grep /perl5db.pl/, values %INC;
+sub ebug {
+
+    package DB;
+    my $class = caller;
+    ## no critic eval
+    eval <<"EBUG";
+        package $class;
+        require Devel::ebug::Console;
+        my \$console = Devel::ebug::Console->new;
+        Enbugger::_load_source();
+        \$console->run;
+EBUG
+}
+
+sub ptkdb {
+
+    package DB;
+    my $class = caller;
+    ## no critic eval
+    eval <<"PTKDB";
+        package $class;
+        require Devel::ptkdb;
+        Enbugger::_load_source();
+PTKDB
+}
+
+sub sdb {
+
+    package DB;
+    my $class = caller;
+    ## no critic eval
+    eval <<"PTKDB";
+        package $class;
+        require Devel::sdb;
+        Enbugger::_load_source();
+PTKDB
+}
+
+sub _load_source {
+    _load_file($0);
+    _load_file($_) for grep {-e} values %INC;
+}
 
 sub _load_file {
     my ($file) = @_;
@@ -29,14 +73,20 @@ sub _load_file {
     my $symname = "_<$file";
     local $/ = "\n";
     no strict 'refs';    ## no critic
-    @$symname = <$fh>;
+    @$symname = readline $fh;
     %$symname = ();
     $$symname = $symname;
 }
 
 # Convenience functions to support `use Enbugger' and `no Enbugger'.
 sub import {
+    my $class = shift @_;
     $DB::single = 2;
+
+    my $debugger = shift(@_) || 'perl5db';
+    if ($debugger) {
+        $class->$debugger;
+    }
 }
 
 sub unimport {
@@ -48,15 +98,22 @@ my $old_single = $DB::single;
 $DB::single = 0;
 require XSLoader;
 XSLoader::load( 'Enbugger', $VERSION );
+require B::Utils;
 
-use B::Utils 'walkallops_simple';
-walkallops_simple(
+# Load the source code for all loaded files. Too bad about (eval 1)
+# though. This doesn't work. Why not!?!
+_load_source();
+
+B::Utils::walkallops_filtered(
     sub {
-        my $o = $_[0];
-        if ( $o->name eq 'nextstate' and $o->stashpv ne 'DB' ) {
-            _alter_cop($o);
-        }
-    }
+        B::Utils::opgrep(
+            {   name    => 'nextstate',
+                stashpv => '!DB'
+            },
+            @_
+        );
+    },
+    sub { Enbugger::_alter_cop( $_[0] ) }
 );
 
 $DB::single = $old_single;
@@ -68,7 +125,7 @@ __END__
 
 =head1 NAME
 
-Enbugger - Turns the debugger on at runtime.
+Enbugger - Enables the debugger at runtime.
 
 =head1 SYNOPSIS
 
@@ -77,11 +134,12 @@ Enbugger - Turns the debugger on at runtime.
       # Oops! there was an error! Enable the debugger now!
       require Enbugger;
       $DB::single = 2;
+      Enbugger->import( 'ebug' );
   }
 
 =head1 DESCRIPTION
 
-Enables or disables the debugger at runtime regardless of whether your
+Allowes the use of the debugger at runtime regardless of whether your
 process was started with debugging on.
 
 =head2 ENABLING THE DEBUGGER
@@ -94,7 +152,7 @@ but it seems like a reasonable default.
   require Enbugger;
 
   # Enables the debugger
-  Enbugger->import;
+  Enbugger->import( 'perl5db' );
 
 Or...
 
@@ -120,6 +178,7 @@ like to do something about.
   $SIG{__DIE__} = sub {
       require Enbugger;
       $DB::single = 3;
+      Enbugger->import( 'ptkdb' );
   };
 
 =head2 DEBUGGING ON SIGNAL
@@ -131,6 +190,7 @@ your process, send it SIGUSR1 and it starts the debugger on itself.
   $SIG{USR1} = sub {
       require Enbugger;
       $DB::single = 2;
+      Enbugger->import( 'sdb' );
   };
 
 Later:

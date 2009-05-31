@@ -6,3 +6,6 @@ Revision history for Perl extension Enbugger.
 0.02  Thu Jul 12 2007
   - Attempt to load @{"_<$file"} arrays
   - Added caveats
+
+0.03  Christmas, 2007
+  - Removed a pile of XS
