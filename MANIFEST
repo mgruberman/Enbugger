@@ -9,6 +9,7 @@ lib/Enbugger.pm
 lib/Enbugger.pod
 lib/Enbugger/ebug.pm
 lib/Enbugger/OnError.pm
+lib/Enbugger/NYTProf.pm
 lib/Enbugger/perl5db.pm
 lib/Enbugger/ptkdb.pm
 lib/Enbugger/sdb.pm
