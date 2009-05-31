@@ -1,0 +1,10 @@
+eval {
+    die 'Oops!';
+};
+if ( my $e = $@ ) {
+    warn $e;
+    { local $@; require Enbugger; }
+    $DB::single = 1;
+
+    # Drops the user into the debugger if there is an error.
+}

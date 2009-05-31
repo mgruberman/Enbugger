@@ -1,0 +1,11 @@
+Artistic
+Changes
+Copying
+eg/exception
+Enbugger.pm
+Enbugger.xs
+Makefile.PL
+MANIFEST
+README
+t/Enbugger.t
+META.yml                                 Module meta-data (added by MakeMaker)

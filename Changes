@@ -1,0 +1,6 @@
+Revision history for Perl extension Enbugger.
+
+0.01  Wed Jul 11 20:29:41 2007
+	- original version; created by h2xs 1.23 with options
+		-n Enbugger
+
