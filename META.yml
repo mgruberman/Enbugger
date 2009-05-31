@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Enbugger
-version:             1.00
+version:             1.01
 abstract:            Enables the debugger at runtime.
 license:             perl
 author:              

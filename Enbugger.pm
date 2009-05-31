@@ -3,7 +3,7 @@ package Enbugger;
 use strict;
 
 use vars '$VERSION';
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 sub perl5db {
 
@@ -63,6 +63,7 @@ sub _load_source {
 
 sub _load_file {
     my ($file) = @_;
+    return unless -e $file;
 
     my $fh;
     if ( not open $fh, '<', $file ) {
@@ -81,12 +82,9 @@ sub _load_file {
 # Convenience functions to support `use Enbugger' and `no Enbugger'.
 sub import {
     my $class = shift @_;
-    $DB::single = 2;
-
     my $debugger = shift(@_) || 'perl5db';
-    if ($debugger) {
-        $class->$debugger;
-    }
+    $class->$debugger;
+    $DB::single = 2;
 }
 
 sub unimport {
