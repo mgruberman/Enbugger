@@ -1,11 +1,11 @@
 --- #YAML:1.0
 name:                Enbugger
-version:             2.004
+version:             2.005
 abstract:            Enables the debugger at runtime.
 license:             perl
 author:              
     - WhitePages.com, Inc <whitepage@cpan.org>
-generated_by:        ExtUtils::MakeMaker version 6.44
+generated_by:        ExtUtils::MakeMaker version 6.42
 distribution_type:   module
 requires:     
     B::Utils:                      0

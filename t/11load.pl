@@ -103,6 +103,7 @@ After loading Enbugger, C<< Enbugger->load_perl5db >> will also be called.
 	$| = 1;
 
 	# Things written to STDERR should also go to our single *OUT.
+	no warnings 'once';
 	*STDERR = $DB::OUT = $DB::LINEINFO = *OUT;
     }
 
@@ -157,4 +158,5 @@ print "\$ok = $Ok.\n";
 ## mode: cperl
 ## mode: auto-fill
 ## cperl-indent-level: 4
+## tab-width: 8
 ## End:

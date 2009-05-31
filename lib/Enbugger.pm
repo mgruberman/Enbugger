@@ -17,7 +17,7 @@ package Enbugger;
 # these licenses.
 
 BEGIN {
-    $VERSION = '2.004';
+    $VERSION = '2.005';
 }
 
 use XSLoader ();
@@ -370,10 +370,15 @@ sub load_file {
 	    Carp::croak( "Can't open $file for reading: $!" );
 	}
 	
-	# Load our source code.
+	# Load our source code. All source must be installed as at least PVIV or
+	# some asserts in op.c may fail. Later, I'll assign better pointers to each
+	# line in instrument_op.
 	local $/ = "\n";
-	@$symname = undef;
-	push @$symname, readline $fh;
+	@$symname = (
+		     undef,
+		     map { Scalar::Util::dualvar( 0, $_ ) }
+		     readline $fh
+		    );
     }
     
     $$symname ||= $file;
@@ -420,7 +425,9 @@ sub instrument_op {
 		no strict 'refs';
 		\ @{"main::_<$file"};
 	    };
-	    Scalar::Util::dualvar( $ptr, $source->[$line] );
+	    if ( defined $source->[$line] ) {
+		Scalar::Util::dualvar( $ptr, $source->[$line] );
+	    }
 	}
 
 	#print $op->file ."\t".$op->line."\t".$o->stash->NAME."\t";
@@ -462,6 +469,7 @@ Enbugger::_compile_with_dbstate();
 ## mode: cperl
 ## mode: auto-fill
 ## cperl-indent-level: 4
+## tab-width: 8
 ## End:
 
 no warnings 'void';		## no critic

@@ -55,3 +55,7 @@ Revision history for Perl extension Enbugger.
 
 2.004 Thu Jun 19, 2008
   - Add breakpoints. Hope it works. Tests come later.
+
+2.005 Thu Nov 13, 2008
+  - Always load @{"_<..."} arrays as PVIV or greater. This prevents assertion failures on debugging perl.
+  - Quieted a warning in t/11load.pl
