@@ -17,7 +17,7 @@ package Enbugger;
 # these licenses.
 
 BEGIN {
-    $VERSION = '2.003';
+    $VERSION = '2.004';
 }
 
 use XSLoader ();
@@ -79,7 +79,8 @@ use strict;
 use warnings;
 
 use B::Utils ();
-use Carp;
+use Carp ();
+use Scalar::Util ();
 
 # Public class settings.
 use vars qw( $DefaultDebugger );
@@ -324,10 +325,30 @@ sub load_source {
 	$class->load_file($_);
     }
 
+    $class->initialize_dbline;
+
     return;
 }
 
 
+sub initialize_dbline {
+     my $file;
+     for ( my $cx = 1; my ( $package, $c_file ) = caller $cx; ++ $cx ) {
+	 if ( $package !~ /^Enbugger/ ) {
+	     $file = $c_file;
+	     last;
+	 }
+     }
+
+     if ( not defined $file ) {
+	 # WTF?
+	 *DB::dbline = [];
+     }
+     else {
+	 no strict 'refs';
+	 *DB::dbline = \@{"main::_<$file"};
+     }
+}
 
 
 
@@ -349,9 +370,7 @@ sub load_file {
 	    Carp::croak( "Can't open $file for reading: $!" );
 	}
 	
-	# TODO: every string here ought to also be a dualvar where the
-	# IV (integer) value is also the pointer to a COP node. I
-	# /guess/ this helps some other things later go vivify breakpoints.
+	# Load our source code.
 	local $/ = "\n";
 	@$symname = undef;
 	push @$symname, readline $fh;
@@ -388,6 +407,21 @@ sub instrument_op {
 
     # Must be a B::COP node.
     if ( $$op and B::class( $op ) eq 'COP' ) {
+
+	# @{"_<$file"} entries where there are COP entries are
+	# dualvars of pointers to the COP nodes that will get
+	# OPf_SPECIAL toggled to indicate breakpoints.
+	{
+	    my $file = $op->file;
+	    my $line = $op->line;
+	    my $ptr  = $$op;
+
+	    my $source = do {
+		no strict 'refs';
+		\ @{"main::_<$file"};
+	    };
+	    Scalar::Util::dualvar( $ptr, $source->[$line] );
+	}
 
 	#print $op->file ."\t".$op->line."\t".$o->stash->NAME."\t";
 	# Disable or enable debugging for this opcode.

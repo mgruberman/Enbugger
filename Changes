@@ -52,3 +52,6 @@ Revision history for Perl extension Enbugger.
 
 2.003 Fri Jun 13, 2008
   - Installing Enbugger while Enbugger is loaded and running works a bit better now.
+
+2.004 Thu Jun 19, 2008
+  - Add breakpoints. Hope it works. Tests come later.
