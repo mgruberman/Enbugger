@@ -1,14 +1,11 @@
---- #YAML:1.0
-name:                Enbugger
-version:             1.02
-abstract:            Enables the debugger at runtime.
-license:             perl
-author:              
-    - Josh ben jore <jjore@cpan.org>
-generated_by:        ExtUtils::MakeMaker version 6.42
-distribution_type:   module
-requires:     
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Enbugger
+version:      1.03
+version_from: lib/Enbugger.pm
+installdirs:  site
+requires:
     B::Utils:                      0
-meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
-    version: 1.3
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.17

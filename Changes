@@ -17,3 +17,7 @@ Revision history for Perl extension Enbugger.
   - Discovered that this doesn't work on 5.5.
   - Added B::Utils to the prereq list. It was missing.
   - Added overridable ->debugger method.
+
+1.03 Jan 15, 2008
+  - Got source handling to work
+  - Added some real tests

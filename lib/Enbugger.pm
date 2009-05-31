@@ -6,60 +6,28 @@ use strict;
 # from 5.5 that show it's missing the COP opcodes I'm altering.
 use 5.006_000;
 
-use vars '$VERSION';
-$VERSION = '1.02';
+use vars qw( $VERSION $DEBUGGER );
+$VERSION = '1.03';
 
-*debugger = \ &perl5db;
-sub perl5db {
+$DEBUGGER = 'perl5db';
+sub debugger {
+	my $class = shift @_;
+	$DEBUGGER = shift @_ if @_;
 
-    # Load the main debugger.
-    package DB;
-    my $class = caller;
-    ## no critic eval
-    eval <<"PERL5DB";
-        package $class;
-        require 'perl5db.pl';
-        Enbugger::_load_source();
-PERL5DB
+	my $debugger_class = "${class}::$DEBUGGER";
+
+	my $debugger_class_file = $debugger_class;
+	$debugger_class_file =~ s#::#/#g;
+	$debugger_class_file .= '.pm';
+	require $debugger_class_file;
+
+	$debugger_class->debugger;
 }
+sub perl5db { shift->debugger( 'perl5db' ) }
+sub ebug    { shift->debugger( 'ebug'    ) }
+sub sdb     { shift->debugger( 'sdb'     ) }
+sub ptkdb   { shift->debugger( 'ptkdb'   ) }
 
-sub ebug {
-
-    package DB;
-    my $class = caller;
-    ## no critic eval
-    eval <<"EBUG";
-        package $class;
-        require Devel::ebug::Console;
-        my \$console = Devel::ebug::Console->new;
-        Enbugger::_load_source();
-        \$console->run;
-EBUG
-}
-
-sub ptkdb {
-
-    package DB;
-    my $class = caller;
-    ## no critic eval
-    eval <<"PTKDB";
-        package $class;
-        require Devel::ptkdb;
-        Enbugger::_load_source();
-PTKDB
-}
-
-sub sdb {
-
-    package DB;
-    my $class = caller;
-    ## no critic eval
-    eval <<"PTKDB";
-        package $class;
-        require Devel::sdb;
-        Enbugger::_load_source();
-PTKDB
-}
 
 sub _load_source {
     _load_file($0);
@@ -76,7 +44,7 @@ sub _load_file {
         return;
     }
 
-    my $symname = "_<$file";
+    my $symname = "::_<$file";
     local $/ = "\n";
     no strict 'refs';    ## no critic
     @$symname = readline $fh;
@@ -87,8 +55,12 @@ sub _load_file {
 # Convenience functions to support `use Enbugger' and `no Enbugger'.
 sub import {
     my $class = shift @_;
-    my $debugger = shift(@_) || 'debugger';
-    $class->$debugger;
+	$DEBUGGER = shift @_ if @_;
+
+	$class->instrument_runtime;
+
+    my $caller = caller;
+    eval "package $caller; \$class->\$debugger";
     $DB::single = 2;
 }
 
@@ -96,30 +68,36 @@ sub unimport {
     $DB::single = 0;
 }
 
-# Now do the *real* work.
-my $old_single = $DB::single;
-$DB::single = 0;
+sub instrument_runtime {
+  # Now do the *real* work.
+  my $old_single = $DB::single;
+  $DB::single = 0;
+  
+  # Load the source code for all loaded files. Too bad about (eval 1)
+  # though. This doesn't work. Why not!?!
+  _load_source();
+  
+  B::Utils::walkallops_filtered(
+				sub {
+				  B::Utils::opgrep(
+						   {   name    => 'nextstate',
+						       stashpv => '!DB'
+						   },
+						   @_
+						  );
+				},
+				sub { Enbugger::_alter_cop( $_[0] ) }
+			       );
+  
+  $DB::single = $old_single;
+}
+
 require XSLoader;
 XSLoader::load( 'Enbugger', $VERSION );
 require B::Utils;
 
-# Load the source code for all loaded files. Too bad about (eval 1)
-# though. This doesn't work. Why not!?!
-_load_source();
-
-B::Utils::walkallops_filtered(
-    sub {
-        B::Utils::opgrep(
-            {   name    => 'nextstate',
-                stashpv => '!DB'
-            },
-            @_
-        );
-    },
-    sub { Enbugger::_alter_cop( $_[0] ) }
-);
-
-$DB::single = $old_single;
+package DB;
+sub DB {}
 
 no warnings 'void';    ## no critic
 'But this is the internet, dear, stupid is one of our prime exports.'
@@ -155,6 +133,7 @@ but it seems like a reasonable default.
   require Enbugger;
 
   # Enables the debugger
+  my $caller = caller;
   Enbugger->perl5db;
 
 Or...

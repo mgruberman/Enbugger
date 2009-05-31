@@ -21,9 +21,15 @@ Enbugger_alter_cop( o )
 		cop->op_ppaddr = PL_ppaddr[ OP_DBSTATE ];
 
 BOOT:
+	/* TODO: PL_debstash = GvHV(gv_fetchpvs("DB::", GV_ADDMULTI, SVt_PVHV)); */
+
+	/* Copied right out ouf perl.c */
+	sv_setpvn(PERL_DEBUG_PAD(0), "", 0);  /* For regex debugging. */
+	sv_setpvn(PERL_DEBUG_PAD(1), "", 0);  /* ext/re needs these */
+	sv_setpvn(PERL_DEBUG_PAD(2), "", 0);  /* even without DEBUGGING. */
+
 	PL_perldb = PERLDB_ALL;
 	PL_ppaddr[ OP_NEXTSTATE ]
 		   = PL_ppaddr[ OP_DBSTATE   ]
 		   = Perl_pp_dbstate;
 	Perl_init_debugger( aTHX );
-
