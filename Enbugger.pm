@@ -3,14 +3,38 @@ package Enbugger;
 use strict;
 
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = '0.02';
 
-local $@;
+# Load the source code for all loaded files. Too bad about (eval 1)
+# though. This doesn't work. Why not!?!
+for my $file ( $0, values %INC ) {
+    next if not -e $file;
+    _load_file($file);
+}
+
+# Load the main debugger.
 my $class = caller;
-eval "package $class; require 'perl5db.pl'";
-die $@ if $@;
-undef $class;
+eval "package $class; require 'perl5db.pl';";    ## no critic
+_load_file($_) for grep /perl5db.pl/, values %INC;
 
+sub _load_file {
+    my ($file) = @_;
+
+    my $fh;
+    if ( not open $fh, '<', $file ) {
+        warn "Can't open $file for reading: $!";
+        return;
+    }
+
+    my $symname = "_<$file";
+    local $/ = "\n";
+    no strict 'refs';    ## no critic
+    @$symname = <$fh>;
+    %$symname = ();
+    $$symname = $symname;
+}
+
+# Convenience functions to support `use Enbugger' and `no Enbugger'.
 sub import {
     $DB::single = 2;
 }
@@ -19,10 +43,12 @@ sub unimport {
     $DB::single = 0;
 }
 
+# Now do the *real* work.
 require XSLoader;
 XSLoader::load( 'Enbugger', $VERSION );
 
-1;
+no warnings 'void';    ## no critic
+'But this is the internet, dear, stupid is one of our prime exports.'
 
 __END__
 
@@ -69,6 +95,33 @@ Disables single stepping.
 Or...
 
   eval 'no Enbugger';
+
+=head1 EXAMPLES
+
+=head2 DEBUGGING ON EXCEPTION
+
+Maybe you don't expect anything to die but on the chance you do, you'd
+like to do something about.
+
+  $SIG{__DIE__} = sub {
+      require Enbugger;
+      $DB::single = 3;
+  };
+
+=head2 DEBUGGING ON SIGNAL
+
+You could include this snippet in your program and trigger the
+debugger on SIGUSR1. Then later, when you're wondering what's up with
+your process, send it SIGUSR1 and it starts the debugger on itself.
+
+  $SIG{USR1} = sub {
+      require Enbugger;
+      $DB::single = 2;
+  };
+
+Later:
+
+  $ kill -USR1 12345
 
 =head1 INSTALLATION
 
