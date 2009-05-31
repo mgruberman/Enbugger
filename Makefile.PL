@@ -5,4 +5,5 @@ WriteMakefile(
     ABSTRACT_FROM => 'Enbugger.pm',
     AUTHOR        => 'Josh ben jore <jjore@cpan.org>',
     LICENSE       => 'perl',
+    PREREQ_PM     => { 'B::Utils' => 0, },
 );

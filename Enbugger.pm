@@ -2,9 +2,14 @@ package Enbugger;
 
 use strict;
 
-use vars '$VERSION';
-$VERSION = '1.01';
+# I don't know the real minimum version. I've gotten failure reports
+# from 5.5 that show it's missing the COP opcodes I'm altering.
+use 5.006_000;
 
+use vars '$VERSION';
+$VERSION = '1.02';
+
+*debugger = \ &perl5db;
 sub perl5db {
 
     # Load the main debugger.
@@ -82,7 +87,7 @@ sub _load_file {
 # Convenience functions to support `use Enbugger' and `no Enbugger'.
 sub import {
     my $class = shift @_;
-    my $debugger = shift(@_) || 'perl5db';
+    my $debugger = shift(@_) || 'debugger';
     $class->$debugger;
     $DB::single = 2;
 }
@@ -132,12 +137,12 @@ Enbugger - Enables the debugger at runtime.
       # Oops! there was an error! Enable the debugger now!
       require Enbugger;
       $DB::single = 2;
-      Enbugger->import( 'ebug' );
+      Enbugger->debugger;
   }
 
 =head1 DESCRIPTION
 
-Allowes the use of the debugger at runtime regardless of whether your
+Allows the use of the debugger at runtime regardless of whether your
 process was started with debugging on.
 
 =head2 ENABLING THE DEBUGGER
@@ -146,11 +151,11 @@ The debugger is loaded automatically when Enbugger is loaded. Calling
 C<< Enbugger->import >> also enables single stepping. This is optional
 but it seems like a reasonable default.
 
-  # Installs the debugger.
+  # Installs debugging support.
   require Enbugger;
 
   # Enables the debugger
-  Enbugger->import( 'perl5db' );
+  Enbugger->perl5db;
 
 Or...
 

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Enbugger
-version:             1.01
+version:             1.02
 abstract:            Enables the debugger at runtime.
 license:             perl
 author:              
@@ -8,6 +8,7 @@ author:
 generated_by:        ExtUtils::MakeMaker version 6.42
 distribution_type:   module
 requires:     
+    B::Utils:                      0
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.3.html
     version: 1.3
