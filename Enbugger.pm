@@ -3,7 +3,7 @@ package Enbugger;
 use strict;
 
 use vars '$VERSION';
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 # Load the source code for all loaded files. Too bad about (eval 1)
 # though. This doesn't work. Why not!?!
@@ -44,8 +44,22 @@ sub unimport {
 }
 
 # Now do the *real* work.
+my $old_single = $DB::single;
+$DB::single = 0;
 require XSLoader;
 XSLoader::load( 'Enbugger', $VERSION );
+
+use B::Utils 'walkallops_simple';
+walkallops_simple(
+    sub {
+        my $o = $_[0];
+        if ( $o->name eq 'nextstate' and $o->stashpv ne 'DB' ) {
+            _alter_cop($o);
+        }
+    }
+);
+
+$DB::single = $old_single;
 
 no warnings 'void';    ## no critic
 'But this is the internet, dear, stupid is one of our prime exports.'

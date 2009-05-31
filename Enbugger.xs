@@ -35,6 +35,17 @@ Enbugger_remove_enbug()
 	CODE:
 		PL_runops = old_runops;
 
+void
+Enbugger_alter_cop( o )
+		SV * o
+	PROTOTYPE: $
+	PREINIT:
+		COP* cop;
+	CODE:
+		cop = INT2PTR( COP*, SvIV( SvRV( o ) ) );
+		cop->op_type = OP_DBSTATE;
+		cop->op_ppaddr = PL_ppaddr[ OP_DBSTATE ];
+
 BOOT:
 	old_runops = PL_runops;
 	Perl_init_debugger( aTHX );

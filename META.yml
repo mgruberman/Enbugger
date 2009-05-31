@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Enbugger
-version:             0.02
+version:             0.03
 abstract:            Turns the debugger on at runtime.
 license:             perl
 generated_by:        ExtUtils::MakeMaker version 6.32
