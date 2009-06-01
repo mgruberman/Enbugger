@@ -470,7 +470,10 @@ sub import {
 }
 
 
-BEGIN { __PACKAGE__->register_debugger( 'perl5db' ) }
+BEGIN {
+    __PACKAGE__->register_debugger( 'perl5db' );
+    __PACKAGE__->register_debugger( 'NYTProf' );
+}
 # TODO: __PACKAGE__->register_debugger( 'ebug' );
 # TODO: __PACKAGE__->register_debugger( 'sdb' );
 # TODO: __PACKAGE__->register_debugger( 'ptkdb' );
