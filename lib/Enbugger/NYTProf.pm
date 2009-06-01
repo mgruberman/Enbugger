@@ -28,6 +28,7 @@ use strict;
 use warnings;
 use vars qw( @ISA @Symbols );
 BEGIN { @ISA = 'Enbugger' }
+require B::Utils;
 
 
 
