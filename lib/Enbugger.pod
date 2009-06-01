@@ -327,6 +327,25 @@ A function that modifies L<B::COP> objects.
 
 
 
+=head1 PRIVATE METHODS
+
+The followings methods exist but I'm not sure whether they'll continue
+to exist in their current form so they're private for now.
+
+=over
+
+=item CLASS-E<gt>_compile_with_nextstate
+
+=item CLASS-E<gt>_compile_with_dbstate
+
+=item CLASS-E<gt>_instrumented_ppaddr
+
+=item CLASS-E<gt>_uninstrumented_ppaddr
+
+=back
+
+
+
 
 =head1 DEPENDENCIES
 

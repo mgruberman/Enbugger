@@ -185,12 +185,14 @@ From perl, state that future compilation will have or not have breakpoint dbstat
 =cut
 
 void
-Enbugger__compile_with_nextstate()
+Enbugger__compile_with_nextstate(class)
+    SV *class
   CODE:
     compile_with_nextstate();
 
 void
-Enbugger__compile_with_dbstate()
+Enbugger__compile_with_dbstate(class)
+    SV *class
   CODE:
     compile_with_dbstate();
 

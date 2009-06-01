@@ -43,9 +43,9 @@ BEGIN { @ISA = 'Enbugger' }
 sub _load_debugger {
     my ( $class ) = @_;
     
-    Enbugger::_compile_with_nextstate();
+    $class->_compile_with_nextstate();
     require 'perl5db.pl';
-    Enbugger::_compile_with_dbstate();
+    $class->_compile_with_dbstate();
     
     $class->init_debugger;
     
