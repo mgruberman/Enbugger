@@ -266,7 +266,7 @@ sub load_debugger {
     Enbugger->_compile_with_nextstate();
     require $debugger_class_file;
     $DEBUGGER_CLASS->_load_debugger;
-    Enbugger->instrument_runtime;
+    $DEBUGGER_CLASS->instrument_runtime;
 
 
     # Subsequent compilation will use pp_dbstate like expected.

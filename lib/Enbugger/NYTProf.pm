@@ -43,27 +43,28 @@ BEGIN { @ISA = 'Enbugger' }
 sub _load_debugger {
     my ( $class ) = @_;
     
-    Enbugger::_compile_with_nextstate();
+    # Compile D::NYTProf w/o the debugger on.
+    Enbugger->_compile_with_nextstate();
     require Devel::NYTProf;
-    Enbugger::_compile_with_dbstate();
-    
+
+    # Install the debugger.
     $class->init_debugger;
-    
+    $class->load_source;
+
+    # Install D::NYTProf's hooks.
+    DB::_INIT();
+
+    # Fix-up all previously compiled code to use the slots assigned
+    # into PL_ppaddr.
+    B::Utils::walkallops_simple( sub { return if 'B::NULL' eq ref $_[0];
+                                       Enbugger::NYTProf::instrument_op($_[0])});
+
     return;
 }
 
 
 
-
-
-=item CLASS-E<gt>_stop
-
-=cut
-
-sub _stop;
-
-
-
+sub instrument_runtime {}
 
 
 
