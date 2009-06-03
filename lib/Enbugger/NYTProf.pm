@@ -64,6 +64,7 @@ sub _load_debugger {
 }
 
 
+1 if $B::Utils::file;
 sub instrument_runtime {
     # Fix-up all previously compiled code to use the slots assigned
     # into PL_ppaddr.
@@ -93,6 +94,7 @@ sub instrument_runtime {
 # debugger. Enbugger, the base class will use this to guess at which
 # debugger has been loaded if it was loaded prior to Enbugger being
 # around.
+1 if %Enbugger::RegisteredDebuggers;
 while ( my $line = <DATA> ) {
     $line =~ s/[\r\n]+\z//;
 

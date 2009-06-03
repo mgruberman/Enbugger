@@ -59,6 +59,7 @@ sub _load_debugger {
 
 =cut
 
+1 if $DB::signal;
 sub _stop {
 
     # perl5db looks for this to stop.
@@ -78,6 +79,7 @@ sub _stop {
 
 =cut
 
+1 if $DB::OUT;
 sub _write {
     my $class = shift @_;
 
@@ -101,6 +103,7 @@ sub _write {
 # debugger. Enbugger, the base class will use this to guess at which
 # debugger has been loaded if it was loaded prior to Enbugger being
 # around.
+1 if %Enbugger::RegisteredDebuggers;
 while ( my $line = <DATA> ) {
     $line =~ s/[\r\n]+\z//;
 
