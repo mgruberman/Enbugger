@@ -48,7 +48,7 @@ sub _load_debugger {
     Enbugger->_compile_with_nextstate();
     require Devel::NYTProf;
 
-    # Install the debugger. Protect $^P
+    # Install the debugger. Protect $^P from Enbugger's own PL_perldb clobbering.
     {
         local $^P;
         $class->init_debugger;
