@@ -73,8 +73,14 @@ sub instrument_runtime {
     # so don't do it. Also, avoid instrumenting Devel::NYTProf.
     B::Utils::walkallops_simple( sub { return if
                                            'B::NULL' eq ref $_[0]
-                                           || $B::Utils::file =~ m{Time/HiRes}
-                                           || $B::Utils::file =~ m{NYTProf};
+                                           || $B::Utils::file =~ m{
+                                               (?:
+                                                   Devel/NYTProf\.pm
+                                                 | Devel/NYTProf/Core\.pm
+                                                 | Time/HiRes\.pm
+                                               )
+                                               \z
+                                             }x;
                                        Enbugger::NYTProf::instrument_op($_[0]);
                                    });
 
