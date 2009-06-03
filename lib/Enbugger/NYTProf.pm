@@ -56,6 +56,8 @@ sub _load_debugger {
     $class->load_source;
 
     # Install D::NYTProf's hooks.
+    # TODO: Detect whether INIT has already passed. If not, just install the proper
+    # INIT{} and let it happen at the right time.
     DB::_INIT();
 
     # Fix-up all previously compiled code to use the slots assigned
