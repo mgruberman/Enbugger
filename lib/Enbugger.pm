@@ -76,7 +76,6 @@ BEGIN {
 use 5.006_000;
 
 use strict;
-use warnings;
 
 use B::Utils ();
 use Carp ();

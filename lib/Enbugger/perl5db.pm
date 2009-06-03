@@ -25,7 +25,6 @@ Enbugger::perl5db - subclass for the ordinary perl5db.pl debugger
 
 
 use strict;
-use warnings;
 use vars qw( @ISA @Symbols );
 BEGIN { @ISA = 'Enbugger' }
 
