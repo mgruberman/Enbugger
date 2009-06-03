@@ -53,6 +53,7 @@ sub _load_debugger {
         local $^P;
         $class->init_debugger;
     }
+
     $class->load_source;
 
     # Install D::NYTProf's hooks.
