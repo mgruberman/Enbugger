@@ -101,36 +101,27 @@ sub instrument_runtime {
 # debugger has been loaded if it was loaded prior to Enbugger being
 # around.
 1 if %Enbugger::RegisteredDebuggers;
-while ( my $line = <DATA> ) {
-    $line =~ s/[\r\n]+\z//;
-
-    # Stop reading once I hit the paragraph of at the end.
-    last if not $line;
-
-    push @{$Enbugger::RegisteredDebuggers{NYTProf}{symbols}}, $line;
-}
-close *DATA;
+$Enbugger::RegisteredDebuggers{NYTProf}{symbols} = [qw[
+    DB
+    DB_profiler
+    _INIT
+    __ANON__[/opt/perl-5.10.0/lib/site_perl/5.10.0/darwin-2level/Devel/NYTProf.pm:39]
+    _finish
+    args
+    dbline
+    disable_profile
+    enable_profile
+    finish_profile
+    init_profiler
+    postponed
+    set_option
+    signal
+    single
+    sub
+    trace
+]];
 
 () = -.0
-
-__DATA__
-DB
-DB_profiler
-_INIT
-__ANON__[/opt/perl-5.10.0/lib/site_perl/5.10.0/darwin-2level/Devel/NYTProf.pm:39]
-_finish
-args
-dbline
-disable_profile
-enable_profile
-finish_profile
-init_profiler
-postponed
-set_option
-signal
-single
-sub
-trace
 
 ## Local Variables:
 ## mode: cperl
