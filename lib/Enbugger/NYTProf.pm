@@ -60,6 +60,11 @@ sub _load_debugger {
     # INIT{} and let it happen at the right time.
     DB::_INIT();
 
+    return;
+}
+
+
+sub instrument_runtime {
     # Fix-up all previously compiled code to use the slots assigned
     # into PL_ppaddr.
     #
@@ -72,12 +77,7 @@ sub _load_debugger {
                                        Enbugger::NYTProf::instrument_op($_[0]);
                                    });
 
-    return;
 }
-
-
-
-sub instrument_runtime {}
 
 
 
