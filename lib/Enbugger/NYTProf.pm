@@ -48,8 +48,11 @@ sub _load_debugger {
     Enbugger->_compile_with_nextstate();
     require Devel::NYTProf;
 
-    # Install the debugger.
-    $class->init_debugger;
+    # Install the debugger. Protect $^P
+    {
+        local $^P;
+        $class->init_debugger;
+    }
     $class->load_source;
 
     # Install D::NYTProf's hooks.
