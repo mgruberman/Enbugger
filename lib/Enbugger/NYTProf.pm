@@ -60,8 +60,15 @@ sub _load_debugger {
 
     # Fix-up all previously compiled code to use the slots assigned
     # into PL_ppaddr.
-    B::Utils::walkallops_simple( sub { return if 'B::NULL' eq ref $_[0];
-                                       Enbugger::NYTProf::instrument_op($_[0])});
+    #
+    # TODO: Devel::NYTProf itself prefers to keep Time::HiRes uninstrumented 
+    # so don't do it. Also, avoid instrumenting Devel::NYTProf.
+    B::Utils::walkallops_simple( sub { return if
+                                           'B::NULL' eq ref $_[0]
+                                           || $B::Utils::file =~ m{Time/HiRes}
+                                           || $B::Utils::file =~ m{NYTProf};
+                                       Enbugger::NYTProf::instrument_op($_[0]);
+                                   });
 
     return;
 }
