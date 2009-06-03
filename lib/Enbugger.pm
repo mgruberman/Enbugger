@@ -17,7 +17,7 @@ package Enbugger;
 # these licenses.
 
 BEGIN {
-    $VERSION = '2.005';
+    $VERSION = '2.006';
 }
 
 use XSLoader ();

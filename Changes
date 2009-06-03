@@ -59,3 +59,23 @@ Revision history for Perl extension Enbugger.
 2.005 Thu Nov 13, 2008
   - Always load @{"_<..."} arrays as PVIV or greater. This prevents assertion failures on debugging perl.
   - Quieted a warning in t/11load.pl
+
+2.006 Wed Jun  3, 2009
+
+7ee669f2099e03ef15db52c4efe16cf3acd8803d Eliminate some *DATA handles
+687b3f7e83f94841915e7c8f2b7649809209fdbc NYTProf declines to instrument Devel/NYTProf.pm, Devel/NYTProf/Core.pm, Time/HiRes.pm
+8cfb669edcf810e4596ab55432022565f1148662 Silence "only once" warnings
+ddbf1debc744a16f08d7d6f2d2bfd09f1b894dbf instrument_runtime for NYTProf
+c8ca0915ed1aa505b13dbcb48156b46dea92e4d7 TODO: detect INIT for NYTProf
+fe79edf3d327039db9ae03afb3920f91900e8227 Remove warnings
+5cb0bb8750c4bbb5a1e512de3d9295836c180c39 whitespace
+5a1cdb417e1b5d5a6eb1ae89539136142e05f07b Initialize the debugger for NYTProf but let it set $^P
+73e1f62f0c242dd63b0a70067bff3d1d0087c88e Avoid instrumenting NYTProf and Time/HiRes for NYTProf
+3b801043d22edb276fd274921ebb25aa8a513def Initialize the debugger for NYTProf but let it set $^P
+f4c62c6b6d1489ec6d5b2463252799a1a54e87e6 Enbugger::NYTProf uses B::Utils so it should use() it
+593c5f7ce6b4b6e0a76bbc74c4a9eaa88a2a8e45 Enbugger::NYTProf rewrites o->op_ppaddr using PL_ppaddr
+639d2d3e91e5b12edf67f4f9e2cfeabbbfe37c59 Renaming to lib/Enbugger/NYTProf.pm
+bc448b0795003285cc9cb6d82758cb91a8219dbc Renaming lib/Enbugger/nytprof.pm away to fix my mac
+98f33afd12dee727d4475ccb508e50663e7e4ad4 Auto-register NYFProf
+e7747b6bae920b747261316048b93def7e18cf9c _compile_with_{dbstate,nextstate} are methods now for overloading
+206c76c3ee676df29b34daa8d2fc7a7ed408009d Add NYTProf hooks
