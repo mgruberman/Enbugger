@@ -3,9 +3,6 @@
 
 Enbugger - Enables the debugger at runtime.
 
-
-
-
 =head1 SYNOPSIS
 
     my $ok = eval { ...; 1 };
@@ -140,7 +137,7 @@ At one terminal:
 
 At a separate terminal:
 
-  bash$ ps ax | grep perl
+  bash$ ps x | grep perl
   12850 pts/1    R      0:01 perl -MEnbugger::OnError -le while(1){}
   12852 pts/1    R+     0:00 grep perl
   bash$ kill -USR1 12850
@@ -149,12 +146,12 @@ Back at the original perl program:
 
   Loading DB routines from perl5db.pl version 1.3
   Editor support available.
-  
+
   Enter h or `h h' for help, or `man perldebug' for more help.
-  
+
   Received signal USR1 at -e line 1
           eval {...} called at -e line 1
-  
+
   Enbugger::OnError::(/home/jbenjore/src/Enbugger/blib/lib/Enbugger/OnError.pm:90):
   90:
     DB<1> T
@@ -245,8 +242,8 @@ This is the default perl debugger. See also L<Enbugger::perl5db> and L<perl5db.p
 #=item ptkdb
 #
 #This is the L<Devel::ptkdb> debugger. See also L<Enbugger::ptkdb>.
-#
-#=back
+
+=back
 
 
 
