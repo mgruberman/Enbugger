@@ -468,8 +468,8 @@ Joshua ben Jore E<gt>jjore@cpan.orgE<lt>
 
 =head1 COPYRIGHT AND LICENCE
 
-Copyright (C) 2007 WhitePages.com, Inc. with primary development by
-Joshua ben Jore.
+Copyright (C) 2007, 2008, 2009 WhitePages.com, Inc. with primary
+development by Joshua ben Jore.
 
 This program is distributed WITHOUT ANY WARRANTY, including but not
 limited to the implied warranties of merchantability or fitness for a

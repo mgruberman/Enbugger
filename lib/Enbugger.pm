@@ -2,7 +2,7 @@ package Enbugger;
 
 # COPYRIGHT AND LICENCE
 #
-# Copyright (C) 2007,2008 WhitePages.com, Inc. with primary
+# Copyright (C) 2007,2008,2009 WhitePages.com, Inc. with primary
 # development by Joshua ben Jore.
 #
 # This program is distributed WITHOUT ANY WARRANTY, including but not
