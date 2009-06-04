@@ -160,9 +160,90 @@ Back at the original perl program:
     DB<1> q
   bash$
 
+=head2 From gdb
 
+You can attach to a running process and inject a perl debugger even
+when you didn't originally plan for this. This works very much like
+perl's unsafe signals so there's a reasonable chance that your process
+could go pear shaped after doing this.
 
+Have something to connect to:
 
+  bash$ perl -e 'while(1) {}' &
+  [1] 16061
+  bash$ ps x | grep perl
+  16061 s002  R      0:16.91 perl -e while(1) {}
+
+Attach with GDB (L<http://www.gnu.org/software/gdb/>):
+
+  bash$ gdb -p 16061
+  GNU gdb 6.3.50-20050815 (Apple version gdb-768) (Tue Oct  2 04:07:49 UTC 2007)
+  Copyright 2004 Free Software Foundation, Inc.
+  GDB is free software, covered by the GNU General Public License, and you are
+  welcome to change it and/or distribute copies of it under certain conditions.
+  Type "show copying" to see the conditions.
+  There is absolutely no warranty for GDB.  Type "show warranty" for details.
+  This GDB was configured as "i386-apple-darwin".
+  /Users/jbenjore/16061: No such file or directory.
+  Attaching to process 16061.
+  Reading symbols for shared libraries . done
+  Reading symbols for shared libraries ...... done
+  0x001be987 in Perl_pp_unstack ()
+  (gdb)
+
+Detect whether you are attaching to a threaded or unthreaded
+perl. When this function returns zero, omit it from the Perl_eval_pv()
+call:
+
+  (gdb) call (void*)Perl_get_context()
+  $1 = (void *) 0x800000
+
+OR
+
+  (gdb) call (void*)Perl_get_context()
+  $1 = (void *) 0x0
+
+Inject a debugger into a threaded build. Optionally, send a debugger
+to someplace like a remote terminal. Read L<perl5db.pl> for more
+options.
+
+  (gdb) call (void*)Perl_eval_pv((void*)Perl_get_context(),"eval{require Enbugger;warn q(stopping);$ENV{PERLDB_OPTS}='RemotePort=localhost:4000';Enbugger->stop;};print STDERR $@",0)
+
+OR inject a debugger into an unthreaded build:
+
+  (gdb) call (void*)Perl_eval_pv("eval{require Enbugger;warn q(stopping);$ENV{PERLDB_OPTS}='RemotePort=localhost:4000';Enbugger->stop;};print STDERR $@",0)
+
+Receive a perl debugger.
+
+  Reading symbols for shared libraries . done
+  Reading symbols for shared libraries . done
+  Reading symbols for shared libraries . done
+  Reading symbols for shared libraries . done
+  Reading symbols for shared libraries . done
+
+  Loading DB routines from perl5db.pl version 1.32
+  Editor support available.
+
+  Enter h or `h h' for help, or `man perldebug' for more help.
+
+  $2 = (void *) 0x85c000
+  (gdb) 
+  main::((eval 16)[-e:1]:1):eval{warn q(stopping);require Enbugger;Enbugger->stop};print STDERR $@
+    DB<1> p "Hi, I am in perl verson $] now"
+  Hi, I am in perl verson 5.010000 now
+  DB<2> T
+    $ = eval 'eval{warn q(stopping);require Enbugger;Enbugger->stop};print STDERR $@' called from -e line 1
+
+Return control back to gdb:
+
+  DB<3> c
+  (gdb)
+
+Return control back to the program:
+
+  (gdb) detach
+  Detaching from process 16314 thread 0x10b.
+  (gdb) q
 
 =head1 PUBLIC API
 
