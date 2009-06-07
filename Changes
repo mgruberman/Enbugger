@@ -79,3 +79,10 @@ bc448b0795003285cc9cb6d82758cb91a8219dbc Renaming lib/Enbugger/nytprof.pm away t
 98f33afd12dee727d4475ccb508e50663e7e4ad4 Auto-register NYFProf
 e7747b6bae920b747261316048b93def7e18cf9c _compile_with_{dbstate,nextstate} are methods now for overloading
 206c76c3ee676df29b34daa8d2fc7a7ed408009d Add NYTProf hooks
+
+2.007 Sat Jun  6, 2009
+
+a4568f664795be6d4c31ea482883eab5410bf955 Re-up copyright statement
+bf56bcd89dc5caf1ec835c723c0434aeb874714f Add NYTProf tests
+a8921eb4f03bf4daa55449daa3aeefb651b8d9f7 Add gdb + RemotePort example
+e34668c6328eccf78de2aa358c0c52d2a29c16ae cleaning
