@@ -80,6 +80,20 @@ sub run {
         my $core   = $? & 128;
         my $signal = $? & 127;
         my $exit   = $? >> 8;
+
+        print STDERR
+            map {
+                if ( open my $fh, '<', $_ ) {
+                    <$fh>;
+                }
+                else {
+                    warn "Can't open $_: $!";
+                    '';
+                }
+            }
+            grep { -f }
+            @args[1 .. $#args];
+
         die "Failed to run @args: "
           . join ' ',
             ( $core ? 'core dumped' : () ),
