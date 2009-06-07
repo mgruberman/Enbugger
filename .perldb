@@ -1,0 +1,3 @@
+# this file exists to override anything in the user's own directory.
+# If the user has a ~/.perldb file, it will be used and it can
+# break the tests.
