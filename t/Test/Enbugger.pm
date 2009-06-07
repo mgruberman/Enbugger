@@ -29,6 +29,10 @@ BEGIN {
     *import = \ &Exporter::import;
     @EXPORT_OK = qw( read_file run run_with_tmp );
     $EXPORT_TAGS{all} = [ @EXPORT, @EXPORT_OK ];
+
+    require constant;
+    system $^X, '-e', 'close *STDERR; require Term::Readkey; Term::Readkey::GetTerminalSize(*STDOUT)';
+    constant->import( FAKE_TERMINAL => !! $? );
 }
 
 sub run_with_tmp {
@@ -74,6 +78,19 @@ sub run {
         # Add new OS/environment fiddling here.
     }
     
+    # Provide some rows/column defaults so Term::Readkey in perl5db.pl won't die at CPAN
+    # users.
+    local $ENV{COLUMNS} = $ENV{COLUMNS};
+    local $ENV{ROWS} = $ENV{ROWS};
+    if ( FAKE_TERMINAL ) {
+        $ENV{COLUMNS} ||= 80;
+        $ENV{ROWS}    ||= 25;
+    }
+    else {
+        delete $ENV{COLUMNS} if ! defined $ENV{COLUMNS};
+        delete $ENV{ROWS} if ! defined $ENV{ROWS};
+    }
+
     # Run the test program.
     system { $args[0] } @args;
     if ( $? ) {
