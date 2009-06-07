@@ -86,3 +86,7 @@ a4568f664795be6d4c31ea482883eab5410bf955 Re-up copyright statement
 bf56bcd89dc5caf1ec835c723c0434aeb874714f Add NYTProf tests
 a8921eb4f03bf4daa55449daa3aeefb651b8d9f7 Add gdb + RemotePort example
 e34668c6328eccf78de2aa358c0c52d2a29c16ae cleaning
+
+2.008 Sat Jun  6, 2009
+
+105058c0a96f4623d57be298a866ce0919ee0fa4 Add empty .perldb to override the user's own file
