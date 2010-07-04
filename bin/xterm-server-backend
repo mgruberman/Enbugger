@@ -1,0 +1,61 @@
+#!perl
+
+=head1 NAME
+
+xterm-server-backend - TOD
+
+=head1 SYNOPSIS
+
+xterm-server-backend [options]
+
+    --help
+
+=head1 DESCRIPTION
+
+TODO
+
+=cut
+
+use strict;
+use warnings;
+use autodie ':all';
+use Getopt::Long ();
+use Pod::Usage ();
+
+Getopt::Long::GetOptions(
+    help => sub { Pod::Usage::pod2usage() },
+)
+  or Pod::Usage::pod2usage();
+
+$SIG{CHLD} = 'IGNORE';
+fork && exit;
+fork && exit;
+umask 0;
+chdir '/';
+
+# TODO: reduce the # of processes required here.
+# 8105 pts/0    S      0:00 socat TCP-LISTEN:53505,fork,reuseaddr EXEC:/home/josh/src/xterm-server/xterm-server-backend,setsid,nofork
+# 8110 pts/2    S+     0:00 telnet localhost 53505
+# 8113 ?        S      0:00 /home/josh/perl5/perlbrew/perls/perl-5.12.1/bin/perl /home/josh/src/xterm-server/xterm-server-backend
+# 8114 ?        S      0:00 sh -c 3>&1 xterm -title 'Perl 5 Debugger' -e sh -c "tty 1>&3;?sleep 10000000"
+# 8115 ?        S      0:00 xterm -title Perl 5 Debugger -e sh -c tty 1>&3;?sleep 10000000
+# 8116 pts/4    Ss+    0:00 sh -c tty 1>&3;?sleep 10000000
+# 8118 ?        S      0:00 socat - FILE:/dev/pts/4
+# 8119 pts/4    S+     0:00 sleep 10000000
+
+open my $xterm_process, q(3>&1 xterm -title 'Perl 5 Debugger' -e sh -c "tty 1>&3;
+sleep 10000000"|);
+
+my $tty = <$xterm_process>;
+chomp $tty;
+
+system 'socat', '-', "FILE:$tty";
+
+no autodie;
+open my $tty_fh, '>', $tty;
+syswrite $tty_fh, "Socket closed\n";
+close $tty_fh;
+
+kill -2,  0;
+kill -15, 0;
+kill -9,  0;

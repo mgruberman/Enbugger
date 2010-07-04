@@ -1,5 +1,9 @@
 Artistic
 Changes
+bin/screen-server
+bin/screen-server-backend
+bin/xterm-server
+bin/xterm-server-backend
 eg/exception1
 eg/exception2
 eg/on-signal

@@ -1,0 +1,96 @@
+#!perl
+
+=head1 NAME
+
+screen-server-backend - TODO
+
+=head1 SYNOPSIS
+
+screen-server-backend [options]
+
+    --help                 TODO
+    --name <screen name>   TODO
+
+=head1 DESCRIPTION
+
+TODO
+
+=cut
+
+
+use strict;
+use warnings;
+use 5.010_000;
+use autodie ':all';
+use File::Temp ();
+use Getopt::Long ();
+use Pod::Usage ();
+
+Getopt::Long::GetOptions(
+    help => sub { Pod::Usage::pod2usage() },
+    name => \ my $screen_name,
+)
+  or Pod::Usage::pod2usage();
+
+$SIG{CHLD} = 'IGNORE';
+fork && exit;
+fork && exit;
+umask 0;
+chdir '/';
+
+my ( $log_fh, $log_fn ) = File::Temp::tempfile();
+my $top_pid = $$;
+given ( fork ) {
+    when ( undef ) { die "Can't fork: $!" }
+    when ( 0 ) {
+
+        # Double-fork so our parent can reap us immediately and the
+        # exec() below will be reaped by init.
+        fork && exit;
+        fork && exit;
+
+        # TODO: Wait until either the parent socat has exited or it
+        # has logged the right thing.
+        sleep 1;
+
+        # Read the PTY from the socat logfile and have /usr/bin/screen
+        # start a window against it.
+        while ( my $l = <$log_fh> ) {
+            if ( $l =~ m{PTY is (?<pty>/dev/pts/\d+)} ) {
+                unlink $log_fn;
+                # Tell screen to open a new window using the PTY
+                # allocated by socat.
+                my @screen_opts;
+                if ( $screen_name ) {
+                    push @screen_opts, '-S' => $screen_name;
+                }
+                exec
+                    'screen',
+                    @screen_opts,
+                    '-X' => 'screen', $+{pty};
+            }
+        }
+
+        # This is an error condition.
+        #
+        # I was unable to read any "PTY is /dev/pts/#" lines in the
+        # socat log so something has gone wrong. Kill off the socat if
+        # it's still present.
+        #
+        # TODO: check for actual death, wait between signals
+        unlink $log_fn;
+        kill $_, $top_pid for -2, -15, -9;
+    }
+    default {
+
+        # Tie our input to a new PTY.
+        #
+        # I request two levels of -d debug to get the a message "PTY
+        # is /dev/pts/#" in the log file at -lf.
+        exec
+            'socat',
+            '-d', '-d',
+            "-lf$log_fn",
+            '-' =>  'PTY';
+    }
+}
