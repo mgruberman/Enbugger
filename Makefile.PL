@@ -32,6 +32,8 @@ WriteMakefile(
     EXE_FILES => [qw(
         bin/screen-server
         bin/screen-server-backend
+        bin/tmux-server
+        bin/tmux-server-backend
         bin/xterm-server
         bin/xterm-server-backend
     )],
