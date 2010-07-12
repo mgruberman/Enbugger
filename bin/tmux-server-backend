@@ -25,19 +25,14 @@ use File::Temp ();
 use Getopt::Long ();
 
 Getopt::Long::GetOptions(
-    help => \&pod2usage,
-    name => \ my $socket_name,
+    help  => \&pod2usage,
+    debug => \ my $debug,
+    name  => \ my $socket_name,
 )
     or pod2usage();
 
-{
-    # Enable $SIG{CHLD}='IGNORE' only for a tight scope because
-    # autodie.pm will notice the ECHILD from a waitpid() on the
-    # system() below. :-(
-    local $SIG{CHLD} = 'IGNORE';
     fork && exit;
     fork && exit;
-}
 umask 0;
 chdir '/';
 
