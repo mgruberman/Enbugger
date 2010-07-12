@@ -21,7 +21,6 @@ TODO
 
 
 use strict;
-use autodie ':all';
 use Getopt::Long ();
 
 *STDERR = *STDOUT;
