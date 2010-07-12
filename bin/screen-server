@@ -33,18 +33,17 @@ TODO
 
 use strict;
 use Getopt::Long ();
-use Pod::Usage ();
 use FindBin ();
 
 Getopt::Long::GetOptions(
-    help         => sub { Pod::Usage::pod2usage() },
+    help         => \ &pod2usage,
     debug        => \ my $debug,
     name         => \ my $screen_name,
     bind         => \ my $bind_address,
     port         => \ my $tcp_port,
     'daemonize!' => \ my $daemonize,
 )
-  or Pod::Usage::pod2usage();
+    or pod2usage();
 $daemonize = 1     if ! defined $daemonize;
 $tcp_port  = 53505 if ! defined $tcp_port;
 
@@ -73,3 +72,8 @@ if ( $debug ) {
     print STDERR "exec( @cmd )\n";
 }
 exec @cmd;
+
+sub pod2usage {
+    require Pod::Usage;
+    goto &Pod::Usage::pod2usage;
+}
