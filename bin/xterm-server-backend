@@ -26,7 +26,6 @@ Getopt::Long::GetOptions(
 )
   or pod2usage();
 
-$SIG{CHLD} = 'IGNORE';
 fork && exit;
 fork && exit;
 umask 0;
