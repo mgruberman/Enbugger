@@ -64,8 +64,10 @@ if ( $? ) {
 
 # Ignore any failures here. The tty may have already closed.
 open my $tty_fh, '>', $tty;
-syswrite $tty_fh, "Socket closed\n";
-close $tty_fh;
+if ( $tty_fh ) {
+    syswrite $tty_fh, "Socket closed\n";
+    close $tty_fh;
+}
 
 kill -2,  0;
 kill -15, 0;
