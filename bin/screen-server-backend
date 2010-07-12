@@ -64,7 +64,9 @@ elsif ( 0 == $child_pid ) {
     # Read the PTY from the socat logfile and have /usr/bin/screen
     # start a window against it.
     while ( my $l = <$log_fh> ) {
-        if ( $l =~ m{PTY is (?<pty>/dev/pts/\d+)} ) {
+        if ( $l =~ m{PTY is (/dev/pts/\d+)} ) {
+            my $pty = $1;
+
             unlink $log_fn;
             # Tell screen to open a new window using the PTY
             # allocated by socat.
@@ -75,7 +77,7 @@ elsif ( 0 == $child_pid ) {
             exec
                 'screen',
                 @screen_opts,
-                '-X' => 'screen', $+{pty};
+                '-X' => 'screen', $pty;
         }
     }
     
