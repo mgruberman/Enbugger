@@ -67,8 +67,11 @@ if ( $socket_name ) {
   $backend_spec .= " $socket_name";
 }
 $backend_spec .= ",setsid,nofork";
-exec
-  'socat', $listen_spec, $backend_spec;
+my @cmd = ( 'socat', $listen_spec, $backend_spec );
+if ( $debug ) {
+    print STDERR "exec( @cmd )\n";
+}
+exec @cmd;
 
 sub pod2usage {
     require Pod::Usage;
