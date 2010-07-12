@@ -99,11 +99,16 @@ elsif ( $child_pid ) {
     #
     # I request two levels of -d debug to get the a message "PTY
     # is /dev/pts/#" in the log file at -lf.
-    exec
+    my @cmd = (
         'socat',
         '-d', '-d',
         "-lf$log_fn",
-        '-' =>  'PTY';
+        '-' =>  'PTY',
+    );
+    if ( $debug ) {
+        print STDERR "exec( @cmd )\n";
+    }
+    exec @cmd;
 }
 
 sub pod2usage {
