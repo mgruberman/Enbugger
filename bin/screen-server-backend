@@ -69,6 +69,7 @@ elsif ( 0 == $child_pid ) {
         if ( $l =~ m{PTY is (/dev/pts/\d+)} ) {
             my $pty = $1;
 
+            close $log_fh;
             unlink $log_fn;
             # Tell screen to open a new window using the PTY
             # allocated by socat.
@@ -90,6 +91,7 @@ elsif ( 0 == $child_pid ) {
     # it's still present.
     #
     # TODO: check for actual death, wait between signals
+    close $log_fh;
     unlink $log_fn;
     kill -2,  $top_pid; # SIGINT
     kill -15, $top_pid; # SIGTERM
