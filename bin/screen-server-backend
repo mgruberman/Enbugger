@@ -89,7 +89,9 @@ elsif ( 0 == $child_pid ) {
     #
     # TODO: check for actual death, wait between signals
     unlink $log_fn;
-    kill $_, $top_pid for -2, -15, -9;
+    kill -2,  $top_pid; # SIGINT
+    kill -15, $top_pid; # SIGTERM
+    kill -9,  $top_pid; # SIGKILL
 }
 elsif ( $child_pid ) {
     
