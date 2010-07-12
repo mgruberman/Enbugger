@@ -54,7 +54,14 @@ sleep 1;
 my $tty = <$log_fh>;
 chomp $tty;
 
-system 'socat', '-', "FILE:$tty";
+@cmd = ( 'socat', '0', "FILE:$tty" );
+if ( $debug ) {
+    print STDERR "system( @cmd )\n";
+}
+system @cmd;
+if ( $? ) {
+    die "system( @cmd ) returned \$?=$?";
+}
 
 no autodie;
 open my $tty_fh, '>', $tty;
