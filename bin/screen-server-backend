@@ -1,4 +1,4 @@
-#!perl
+#!perl -w
 
 =head1 NAME
 
@@ -19,8 +19,6 @@ TODO
 
 
 use strict;
-use warnings;
-use 5.010_000;
 use autodie ':all';
 use File::Temp ();
 use Getopt::Long ();
