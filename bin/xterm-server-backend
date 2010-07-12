@@ -43,8 +43,12 @@ chdir '/';
 # 8118 ?        S      0:00 socat - FILE:/dev/pts/4
 # 8119 pts/4    S+     0:00 sleep 10000000
 
-open my $xterm_process, q(3>&1 xterm -title 'Perl 5 Debugger' -e sh -c "tty 1>&3;
+my $cmd = q(3>&1 xterm -title 'Perl 5 Debugger' -e sh -c "tty 1>&3;
 sleep 10000000"|);
+my $xterm_pid = open my( $xterm_process ), $cmd;
+if ( ! defined $xterm_pid ) {
+    die "Can't [$cmd]: \$?=$?";
+}
 
 my $tty = <$xterm_process>;
 chomp $tty;
