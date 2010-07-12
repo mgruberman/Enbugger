@@ -28,13 +28,16 @@ Getopt::Long::GetOptions(
     help  => \&pod2usage,
     debug => \ my $debug,
     name  => \ my $socket_name,
+    'daemonize!' => \ my $daemonize,
 )
     or pod2usage();
 
+if ( $daemonize ) {
     fork && exit;
     fork && exit;
-umask 0;
-chdir '/';
+    umask 0;
+    chdir '/';
+}
 
 my ( $log_fh, $log_fn ) = File::Temp::tempfile();
 
