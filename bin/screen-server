@@ -64,7 +64,9 @@ my $listen_spec = "TCP-LISTEN:${tcp_port},fork,reuseaddr";
 if ( $bind_address ) {
   $listen_spec .= ",bind=$bind_address";
 }
-my $backend_spec = "EXEC:$FindBin::Bin/screen-server-backend";
+my $bindir = $FindBin::Bin;
+   $bindir = $FindBin::Bin;
+my $backend_spec = "EXEC:$bindir/screen-server-backend";
 if ( $screen_name ) {
   $backend_spec .= " $screen_name";
 }
