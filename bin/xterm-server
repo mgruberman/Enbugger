@@ -9,6 +9,7 @@ xterm-server - Internet server for xterm
   screen-server [options]
 
       --help
+      --debug
       --port <port>      Listens on <port> [TCP service] and accepts a
                          TCP/IP connection. The IP version is 4 or
                          environment variable
