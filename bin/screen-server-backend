@@ -22,13 +22,12 @@ use strict;
 use autodie ':all';
 use File::Temp ();
 use Getopt::Long ();
-use Pod::Usage ();
 
 Getopt::Long::GetOptions(
-    help => sub { Pod::Usage::pod2usage() },
+    help => \&pod2usage,
     name => \ my $screen_name,
 )
-  or Pod::Usage::pod2usage();
+  or pod2usage();
 
 $SIG{CHLD} = 'IGNORE';
 fork && exit;
@@ -91,4 +90,9 @@ given ( fork ) {
             "-lf$log_fn",
             '-' =>  'PTY';
     }
+}
+
+sub pod2usage {
+    require Pod::Usage;
+    goto &Pod::Usage::pod2usage;
 }
