@@ -77,10 +77,15 @@ elsif ( 0 == $child_pid ) {
             if ( $screen_name ) {
                 push @screen_opts, '-S' => $screen_name;
             }
-            exec
+            my @cmd = (
                 'screen',
                 @screen_opts,
-                '-X' => 'screen', $pty;
+                '-X' => 'screen', $pty
+            );
+            if ( $debug ) {
+                print STDERR "exec( @cmd )\n";
+            }
+            exec @cmd;
         }
     }
     
