@@ -38,7 +38,7 @@ use FindBin ();
 
 Getopt::Long::GetOptions(
     help         => sub { Pod::Usage::pod2usage() },
-    debug        => 
+    debug        => \ my $debug,
     name         => \ my $screen_name,
     bind         => \ my $bind_address,
     port         => \ my $tcp_port,
@@ -68,5 +68,8 @@ if ( $screen_name ) {
   $backend_spec .= " $screen_name";
 }
 $backend_spec .= ",setsid,nofork";
-exec
-  'socat', $listen_spec, $backend_spec;
+my @cmd = ( 'socat', $listen_spec, $backend_spec );
+if ( $debug ) {
+    print STDERR "exec( @cmd )\n";
+}
+exec @cmd;
