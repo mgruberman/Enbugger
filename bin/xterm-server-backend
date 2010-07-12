@@ -76,9 +76,10 @@ if ( $tty_fh ) {
     close $tty_fh;
 }
 
-kill -2,  0;
-kill -15, 0;
-kill -9,  0;
+
+kill -2,  0; # SIGINT
+kill -15, 0; # SIGTERM
+kill -9,  0; # SIGKILL
 
 sub pod2usage {
     require Pod::Usage;
