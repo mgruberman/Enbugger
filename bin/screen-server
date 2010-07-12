@@ -1,4 +1,4 @@
-#!perl
+#!perl -w
 
 =head1 NAME
 
@@ -32,7 +32,6 @@ TODO
 =cut
 
 use strict;
-use warnings;
 use Getopt::Long ();
 use Pod::Usage ();
 use FindBin ();
