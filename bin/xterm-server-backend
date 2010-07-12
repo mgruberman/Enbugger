@@ -20,12 +20,11 @@ use strict;
 use warnings;
 use autodie ':all';
 use Getopt::Long ();
-use Pod::Usage ();
 
 Getopt::Long::GetOptions(
-    help => sub { Pod::Usage::pod2usage() },
+    help => \&pod2usage,
 )
-  or Pod::Usage::pod2usage();
+  or pod2usage();
 
 $SIG{CHLD} = 'IGNORE';
 fork && exit;
@@ -59,3 +58,8 @@ close $tty_fh;
 kill -2,  0;
 kill -15, 0;
 kill -9,  0;
+
+sub pod2usage {
+    require Pod::Usage;
+    goto &Pod::Usage::pod2usage;
+}

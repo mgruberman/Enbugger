@@ -33,18 +33,17 @@ TODO
 use strict;
 use warnings;
 use Getopt::Long ();
-use Pod::Usage ();
 use FindBin ();
 
 Getopt::Long::GetOptions(
-    help         => sub { Pod::Usage::pod2usage() },
+    help         => \ &pod2usage,
     debug        => 
     name         => \ my $screen_name,
     bind         => \ my $bind_address,
     port         => \ my $tcp_port,
     'daemonize!' => \ my $daemonize,
 )
-  or Pod::Usage::pod2usage();
+    or pod2usage();
 $daemonize //= 1;
 $tcp_port  //= 53505;
 
@@ -66,3 +65,8 @@ if ( $bind_address ) {
 my $backend_spec = "EXEC:$FindBin::Bin/xterm-server-backend,setsid,nofork";
 exec
     'socat', $listen_spec, $backend_spec;
+
+sub pod2usage {
+    require Pod::Usage;
+    goto &Pod::Usage::pod2usage;
+}
