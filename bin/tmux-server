@@ -32,10 +32,10 @@ TODO
 =cut
 
 use strict;
-use Getopt::Long ();
 
 # Option handling
 #
+use Getopt::Long ();
 Getopt::Long::GetOptions(
     help         => \&pod2usage,
     debug        => \ my $debug,

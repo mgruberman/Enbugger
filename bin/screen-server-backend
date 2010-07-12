@@ -22,7 +22,6 @@ TODO
 
 
 use strict;
-use Getopt::Long ();
 
 # Seemingly socat doesn't seem to transmit STDERR automatically so
 # re-route it myself.
@@ -31,6 +30,7 @@ use Getopt::Long ();
 
 # Option handling
 # 
+use Getopt::Long ();
 Getopt::Long::GetOptions(
     help => \&pod2usage,
     debug        => \ my $debug,
@@ -38,8 +38,6 @@ Getopt::Long::GetOptions(
     'daemonize!' => \ my $daemonize,
 )
   or pod2usage();
-
-require File::Temp;
 
 # Daemonization by default
 #
@@ -54,6 +52,7 @@ if ( $daemonize ) {
 #
 $SIG{CHLD} = 'IGNORE';
 
+require File::Temp;
 my ( $log_fh, $log_fn ) = File::Temp::tempfile();
 my $top_pid = $$;
 my $child_pid = fork;

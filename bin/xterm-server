@@ -32,12 +32,11 @@ TODO
 =cut
 
 use strict;
-use 5.005;
 use Getopt::Long ();
-use FindBin ();
 
 # Option handling
 #
+use Getopt::Long ();
 Getopt::Long::GetOptions(
     help         => \ &pod2usage,
     debug        => \ my $debug,
@@ -65,6 +64,7 @@ if ( $daemonize ) {
 
 # Launch socat to listen to TCP and launch xterm-server-backend
 #
+require FindBin;
 my $listen_spec = "TCP-LISTEN:${tcp_port},fork,reuseaddr";
 if ( $bind_address ) {
     $listen_spec .= ",bind=$bind_address";

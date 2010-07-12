@@ -33,10 +33,10 @@ TODO
 =cut
 
 use strict;
-use Getopt::Long ();
 
 # Option handling
 #
+use Getopt::Long ();
 Getopt::Long::GetOptions(
     help         => \ &pod2usage,
     debug        => \ my $debug,
@@ -48,8 +48,6 @@ Getopt::Long::GetOptions(
     or pod2usage();
 $daemonize = 1     if ! defined $daemonize;
 $tcp_port  = 53505 if ! defined $tcp_port;
-
-require FindBin;
 
 # Daemonization by default
 #
@@ -66,6 +64,7 @@ if ( $daemonize ) {
 
 # Launch socat to listen to TCP and launch screen-server-backend
 #
+require FindBin;
 my $listen_spec = "TCP-LISTEN:${tcp_port},fork,reuseaddr";
 if ( $bind_address ) {
   $listen_spec .= ",bind=$bind_address";

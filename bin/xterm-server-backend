@@ -18,8 +18,6 @@ TODO
 =cut
 
 use strict;
-use 5.005;
-use Getopt::Long ();
 
 # Seemingly socat doesn't seem to transmit STDERR automatically so
 # re-route it myself.
@@ -28,6 +26,7 @@ use Getopt::Long ();
 
 # Option handling
 # 
+use Getopt::Long ();
 Getopt::Long::GetOptions(
     help => \&pod2usage,
     'daemonize!' => \ my $daemonize,
