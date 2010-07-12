@@ -1,4 +1,4 @@
-#!perl
+#!perl -w
 
 =head1 NAME
 
@@ -19,7 +19,6 @@ TODO
 
 
 use strict;
-use warnings;
 use 5.010_000;
 use autodie ':all';
 use File::Temp ();
@@ -27,10 +26,10 @@ use Getopt::Long ();
 use Pod::Usage ();
 
 Getopt::Long::GetOptions(
-    help => sub { Pod::Usage::pod2usage() },
+    help => \&pod2usage,
     name => \ my $socket_name,
 )
-  or Pod::Usage::pod2usage();
+    or pod2usage();
 
 {
     # Enable $SIG{CHLD}='IGNORE' only for a tight scope because
@@ -61,3 +60,9 @@ close $tty_fh;
 kill -2,  0;
 kill -15, 0;
 kill -9,  0;
+
+
+sub pod2usage {
+    require Pod::Usage;
+    goto &Pod::Usage::pod2usage;
+}
