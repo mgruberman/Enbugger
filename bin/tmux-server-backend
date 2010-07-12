@@ -20,7 +20,6 @@ TODO
 
 use strict;
 use 5.010_000;
-use autodie ':all';
 use Getopt::Long ();
 
 Getopt::Long::GetOptions(
@@ -63,7 +62,7 @@ if ( $? ) {
     die "system( @cmd ) returned \$?=$?";
 }
 
-no autodie;
+$^W = 0;
 open my $tty_fh, '>', $tty;
 syswrite $tty_fh, "Socket closed\n";
 close $tty_fh;
