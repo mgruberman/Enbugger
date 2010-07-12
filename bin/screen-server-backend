@@ -30,7 +30,6 @@ Getopt::Long::GetOptions(
 
 require File::Temp;
 
-$SIG{CHLD} = 'IGNORE';
 fork && exit;
 fork && exit;
 umask 0;
