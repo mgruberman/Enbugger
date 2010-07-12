@@ -96,7 +96,7 @@ elsif ( 0 == $child_pid ) {
             # Clean up the log file. We don't need it anymore. socat
             # itself may keep it open however. This is unfortunate.
             #
-            truncate $log_fh;
+            truncate $log_fh, 0;
             close $log_fh;
             unlink $log_fn;
 
