@@ -48,7 +48,10 @@ system @cmd;
 if ( $? ) {
     die "system( @cmd ) returned \$?=$?";
 }
-sleep 1;
+
+require Time::HiRes;
+Time::HiRes::sleep( 0.05 )
+    until    -s $log_fh;
 
 my $tty = <$log_fh>;
 chomp $tty;
