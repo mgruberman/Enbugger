@@ -16,6 +16,7 @@ TODO
 =cut
 
 use strict;
+use 5.005;
 use Getopt::Long ();
 
 Getopt::Long::GetOptions(
