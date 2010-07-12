@@ -33,7 +33,6 @@ TODO
 
 use strict;
 use Getopt::Long ();
-use FindBin ();
 
 Getopt::Long::GetOptions(
     help         => \&pod2usage,
@@ -58,6 +57,7 @@ if ( $daemonize ) {
   chdir '/';
 }
 
+require FindBin;
 my $listen_spec = "TCP-LISTEN:${tcp_port},fork,reuseaddr";
 if ( $bind_address ) {
   $listen_spec .= ",bind=$bind_address";
