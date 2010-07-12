@@ -63,6 +63,7 @@ if ( $? ) {
 }
 
 # Ignore any failures here. The tty may have already closed.
+$^W = 0;
 open my $tty_fh, '>', $tty;
 if ( $tty_fh ) {
     syswrite $tty_fh, "Socket closed\n";
