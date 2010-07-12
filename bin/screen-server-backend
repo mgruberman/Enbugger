@@ -56,7 +56,10 @@ elsif ( 0 == $child_pid ) {
 
     # TODO: Wait until either the parent socat has exited or it
     # has logged the right thing.
-    sleep 1;
+    require Time::HiRes;
+    Time::HiRes::sleep( 0.05 )
+        while    ! -s $log_fh
+              || kill 0, $top_pid;
 
     # Read the PTY from the socat logfile and have /usr/bin/screen
     # start a window against it.
