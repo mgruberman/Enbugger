@@ -21,7 +21,6 @@ TODO
 use strict;
 use 5.010_000;
 use autodie ':all';
-use File::Temp ();
 use Getopt::Long ();
 
 Getopt::Long::GetOptions(
@@ -39,6 +38,7 @@ if ( $daemonize ) {
     chdir '/';
 }
 
+require File::Temp;
 my ( $log_fh, $log_fn ) = File::Temp::tempfile();
 
 system 'tmux', 'new-window', "tty > $log_fn; sleep 10000000";
