@@ -10,6 +10,8 @@ screen-server-backend [options]
 
     --help                 TODO
     --name <screen name>   TODO
+    --daemonize        (Default)
+    --no-daemonize
 
 =head1 DESCRIPTION
 
@@ -25,22 +27,26 @@ use Getopt::Long ();
 Getopt::Long::GetOptions(
     help => \&pod2usage,
     name => \ my $screen_name,
+    'daemonize!' => \ my $daemonize,
 )
   or pod2usage();
 
 require File::Temp;
 
-fork && exit;
-fork && exit;
-umask 0;
-chdir '/';
+if ( $daemonize ) {
+    fork && exit;
+    fork && exit;
+    umask 0;
+    chdir '/';
+}
 
 my ( $log_fh, $log_fn ) = File::Temp::tempfile();
 my $top_pid = $$;
-given ( fork ) {
-    when ( undef ) { die "Can't fork: $!" }
-    when ( 0 ) {
-
+my $child_pid = fork;
+    if ( ! defined $child_pid ) {
+        die "Can't fork: $!";
+    }
+    elsif ( 0 == $child_pid ) {
         # Double-fork so our parent can reap us immediately and the
         # exec() below will be reaped by init.
         fork && exit;
@@ -78,7 +84,7 @@ given ( fork ) {
         unlink $log_fn;
         kill $_, $top_pid for -2, -15, -9;
     }
-    default {
+    elsif ( $child_pid ) {
 
         # Tie our input to a new PTY.
         #
@@ -90,7 +96,6 @@ given ( fork ) {
             "-lf$log_fn",
             '-' =>  'PTY';
     }
-}
 
 sub pod2usage {
     require Pod::Usage;
