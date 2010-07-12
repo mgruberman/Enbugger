@@ -45,8 +45,8 @@ Getopt::Long::GetOptions(
     'daemonize!' => \ my $daemonize,
 )
   or Pod::Usage::pod2usage();
-$daemonize //= 1;
-$tcp_port  //= 53505;
+$daemonize = 1     if ! defined $daemonize;
+$tcp_port  = 53505 if ! defined $tcp_port;
 
 if ( $daemonize ) {
   close *STDIN;
