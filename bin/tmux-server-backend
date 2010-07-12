@@ -41,7 +41,14 @@ if ( $daemonize ) {
 require File::Temp;
 my ( $log_fh, $log_fn ) = File::Temp::tempfile();
 
-system 'tmux', 'new-window', "tty > $log_fn; sleep 10000000";
+my @cmd = ( 'tmux', 'new-window', "tty > $log_fn; sleep 10000000" );
+if ( $debug ) {
+    print STDERR "system( @cmd )\n";
+}
+system @cmd;
+if ( $? ) {
+    die "system( @cmd ) returned \$?=$?";
+}
 sleep 1;
 
 my $tty = <$log_fh>;
