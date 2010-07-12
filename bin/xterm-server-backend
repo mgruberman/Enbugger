@@ -56,7 +56,11 @@ if ( ! $tty ) {
     die "Couldn't get tty from xterm pid $xterm_pid";
 }
 
-system 'socat', '-', "FILE:$tty";
+my @cmd = ( 'socat', '-', "FILE:$tty" );
+system @cmd;
+if ( $? ) {
+    die "Can't [@cmd]: \$?=$?";
+}
 
 no autodie;
 open my $tty_fh, '>', $tty;
