@@ -40,6 +40,8 @@ if ( $daemonize ) {
     chdir '/';
 }
 
+$SIG{CHLD} = 'IGNORE';
+
 my ( $log_fh, $log_fn ) = File::Temp::tempfile();
 my $top_pid = $$;
 my $child_pid = fork;
