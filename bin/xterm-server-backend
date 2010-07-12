@@ -31,6 +31,8 @@ fork && exit;
 umask 0;
 chdir '/';
 
+# TODO: Add a socat readline proxy
+
 # TODO: reduce the # of processes required here.
 # 8105 pts/0    S      0:00 socat TCP-LISTEN:53505,fork,reuseaddr EXEC:/home/josh/src/xterm-server/xterm-server-backend,setsid,nofork
 # 8110 pts/2    S+     0:00 telnet localhost 53505
