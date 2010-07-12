@@ -36,7 +36,7 @@ use Getopt::Long ();
 
 Getopt::Long::GetOptions(
     help         => \&pod2usage,
-    debug        => 
+    debug        => \ my $debug,
     name         => \ my $socket_name,
     bind         => \ my $bind_address,
     port         => \ my $tcp_port,
