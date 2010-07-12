@@ -20,7 +20,6 @@ TODO
 
 use strict;
 use autodie ':all';
-use File::Temp ();
 use Getopt::Long ();
 
 Getopt::Long::GetOptions(
@@ -28,6 +27,8 @@ Getopt::Long::GetOptions(
     name => \ my $screen_name,
 )
   or pod2usage();
+
+require File::Temp;
 
 $SIG{CHLD} = 'IGNORE';
 fork && exit;
