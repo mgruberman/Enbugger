@@ -8,6 +8,8 @@ xterm-server-backend - TOD
 xterm-server-backend [options]
 
     --help
+    --daemonize        (Default)
+    --no-daemonize
 
 =head1 DESCRIPTION
 
@@ -23,13 +25,17 @@ use Getopt::Long ();
 
 Getopt::Long::GetOptions(
     help => \&pod2usage,
+    'daemonize!' => \ my $daemonize,
 )
-  or pod2usage();
+    or pod2usage();
+$daemonize = 1 if ! defined $daemonize;
 
-fork && exit;
-fork && exit;
-umask 0;
-chdir '/';
+if ( $daemonize ) {
+    fork && exit;
+    fork && exit;
+    umask 0;
+    chdir '/';
+}
 
 # TODO: Add a socat readline proxy
 
