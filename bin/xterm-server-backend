@@ -52,6 +52,9 @@ if ( ! defined $xterm_pid ) {
 
 my $tty = <$xterm_process>;
 chomp $tty;
+if ( ! $tty ) {
+    die "Couldn't get tty from xterm pid $xterm_pid";
+}
 
 system 'socat', '-', "FILE:$tty";
 
