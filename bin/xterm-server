@@ -36,6 +36,8 @@ use 5.005;
 use Getopt::Long ();
 use FindBin ();
 
+# Option handling
+#
 Getopt::Long::GetOptions(
     help         => \ &pod2usage,
     debug        => \ my $debug,
@@ -48,6 +50,8 @@ Getopt::Long::GetOptions(
 $daemonize = 1     if ! defined $daemonize;
 $tcp_port  = 53505 if ! defined $tcp_port;
 
+# Daemonization by default
+#
 if ( $daemonize ) {
     close *STDIN;
     close *STDOUT;
@@ -59,6 +63,8 @@ if ( $daemonize ) {
     chdir '/';
 }
 
+# Launch socat to listen to TCP and launch xterm-server-backend
+#
 my $listen_spec = "TCP-LISTEN:${tcp_port},fork,reuseaddr";
 if ( $bind_address ) {
     $listen_spec .= ",bind=$bind_address";

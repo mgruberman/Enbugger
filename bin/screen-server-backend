@@ -24,8 +24,13 @@ TODO
 use strict;
 use Getopt::Long ();
 
+# Seemingly socat doesn't seem to transmit STDERR automatically so
+# re-route it myself.
+#
 *STDERR = *STDOUT;
 
+# Option handling
+# 
 Getopt::Long::GetOptions(
     help => \&pod2usage,
     debug        => \ my $debug,
@@ -36,6 +41,8 @@ Getopt::Long::GetOptions(
 
 require File::Temp;
 
+# Daemonization by default
+#
 if ( $daemonize ) {
     fork && exit;
     fork && exit;
@@ -43,37 +50,60 @@ if ( $daemonize ) {
     chdir '/';
 }
 
+# Automatically clean up zombie children
+#
 $SIG{CHLD} = 'IGNORE';
 
 my ( $log_fh, $log_fn ) = File::Temp::tempfile();
 my $top_pid = $$;
 my $child_pid = fork;
 if ( ! defined $child_pid ) {
+
+    # Oops, failure. Is there a fork bomb going on?
+    #
     die "Can't fork: $!";
 }
 elsif ( 0 == $child_pid ) {
     # Double-fork so our parent can reap us immediately and the
     # exec() below will be reaped by init.
+    #
     fork && exit;
     fork && exit;
 
-    # TODO: Wait until either the parent socat has exited or it
-    # has logged the right thing.
+    # Wait until either the parent socat has exited or it has logged
+    # the right thing.
+    #
     require Time::HiRes;
     Time::HiRes::sleep( 0.05 )
         while    ! -s $log_fh
               || kill 0, $top_pid;
 
     # Read the PTY from the socat logfile and have /usr/bin/screen
-    # start a window against it.
+    # start a window against it. If all goes well, we'll exec() right
+    # out of this loop and never finish it.
+    #
     while ( my $l = <$log_fh> ) {
+
+        # socat under `-d -d' flags will print a line like the
+        # following. In the parent, socat is configured to write its
+        # debugging log to a $log_fn which we have a handle to in
+        # $log_fh.
+        #
+        #   PTY is /dev/pts/4
+        #
         if ( $l =~ m{PTY is (/dev/pts/\d+)} ) {
             my $pty = $1;
 
+            # Clean up the log file. We don't need it anymore. socat
+            # itself may keep it open however. This is unfortunate.
+            #
+            truncate $log_fh;
             close $log_fh;
             unlink $log_fn;
-            # Tell screen to open a new window using the PTY
-            # allocated by socat.
+
+            # exec screen to open a new window using the PTY allocated
+            # by socat.
+            #
             my @screen_opts;
             if ( $screen_name ) {
                 push @screen_opts, '-S' => $screen_name;
@@ -105,10 +135,13 @@ elsif ( 0 == $child_pid ) {
 }
 elsif ( $child_pid ) {
     
-    # Tie our input to a new PTY.
+    # Tie our input to a new PTY and write the PTY's name to a log
+    # file so the child can pick it up.
     #
-    # I request two levels of -d debug to get the a message "PTY
-    # is /dev/pts/#" in the log file at -lf.
+    # I request two levels of -d debug to get the a message "PTY is
+    # /dev/pts/#" in the log file at -lf. The child process is going
+    # to delete this log file.
+    #
     my @cmd = (
         'socat',
         '-d', '-d',
