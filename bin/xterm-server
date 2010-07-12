@@ -37,7 +37,7 @@ use FindBin ();
 
 Getopt::Long::GetOptions(
     help         => \ &pod2usage,
-    debug        => 
+    debug        => \ my $debug,
     name         => \ my $screen_name,
     bind         => \ my $bind_address,
     port         => \ my $tcp_port,
