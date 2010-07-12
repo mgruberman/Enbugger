@@ -9,6 +9,7 @@ screen-server-backend - TODO
 screen-server-backend [options]
 
     --help                 TODO
+    --debug
     --name <screen name>   TODO
     --daemonize        (Default)
     --no-daemonize
@@ -27,6 +28,7 @@ use Getopt::Long ();
 
 Getopt::Long::GetOptions(
     help => \&pod2usage,
+    debug        => \ my $debug,
     name => \ my $screen_name,
     'daemonize!' => \ my $daemonize,
 )
