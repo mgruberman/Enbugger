@@ -33,7 +33,6 @@ TODO
 
 use strict;
 use Getopt::Long ();
-use FindBin ();
 
 Getopt::Long::GetOptions(
     help         => \ &pod2usage,
@@ -46,6 +45,8 @@ Getopt::Long::GetOptions(
     or pod2usage();
 $daemonize = 1     if ! defined $daemonize;
 $tcp_port  = 53505 if ! defined $tcp_port;
+
+require FindBin;
 
 if ( $daemonize ) {
   close *STDIN;
