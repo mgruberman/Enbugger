@@ -19,7 +19,6 @@ TODO
 
 
 use strict;
-use 5.010_000;
 use Getopt::Long ();
 
 Getopt::Long::GetOptions(
