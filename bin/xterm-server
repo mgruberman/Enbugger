@@ -63,8 +63,11 @@ if ( $bind_address ) {
     $listen_spec .= ",bind=$bind_address";
 }
 my $backend_spec = "EXEC:$FindBin::Bin/xterm-server-backend,setsid,nofork";
-exec
-    'socat', $listen_spec, $backend_spec;
+my @cmd = ( 'socat', $listen_spec, $backend_spec );
+if ( $debug ) {
+    print STDERR "exec( @cmd )\n";
+}
+exec @cmd;
 
 sub pod2usage {
     require Pod::Usage;
