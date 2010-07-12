@@ -1,5 +1,4 @@
-#!perl
-
+#!perl -w
 =head1 NAME
 
 xterm-server-backend - TOD
@@ -17,8 +16,6 @@ TODO
 =cut
 
 use strict;
-use warnings;
-use autodie ':all';
 use Getopt::Long ();
 
 Getopt::Long::GetOptions(
