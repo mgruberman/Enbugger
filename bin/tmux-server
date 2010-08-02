@@ -45,7 +45,7 @@ Getopt::Long::GetOptions(
     'daemonize!' => \ my $daemonize,
 )
   or pod2usage();
-$daemonize = 1     if ! defined $daemonize;
+$daemonize = 0     if ! defined $daemonize;
 $tcp_port  = 53505 if ! defined $tcp_port;
 
 # Daemonization by default
