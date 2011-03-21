@@ -1,3 +1,4 @@
+#define PERL_CORE
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
