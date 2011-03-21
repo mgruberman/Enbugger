@@ -35,7 +35,7 @@ I32 EnbuggerDebugMode = 0;
  * checked once during module loading.
  */
 static void
-set_debug_from_environment()
+set_debug_from_environment(pTHX)
 {
   HV *env_hv;
   SV **svp;
@@ -44,7 +44,7 @@ set_debug_from_environment()
   env_hv = get_hv("main::ENV",0);
   if ( ! env_hv ) {
     /* Does this ever happen? */
-    croak("Couldn't fetch %ENV hash");
+    Perl_croak(aTHX_ "Couldn't fetch %ENV hash");
   }
 
   /* Fetch $ENV{ENBUGGER_DEBUG}. */
@@ -62,7 +62,7 @@ set_debug_from_environment()
  * Set a nextstate/dbstate op's op_type and op_ppaddr.
  */
 static void
-alter_cop( SV *rv, I32 op_type )
+alter_cop( pTHX_ SV *rv, I32 op_type )
 {
   SV  *sv;
   COP *cop;
@@ -78,7 +78,7 @@ alter_cop( SV *rv, I32 op_type )
     if ( DEBUG ) {
       PerlIO_printf(Perl_debug_log, "Enbugger: SvOK(o)=%d SvROK(o)=%d SvIOK(SvRV(o))=%d\n",SvOK(sv),SvROK(sv),SvIOK(SvRV(sv)));
     }
-    croak("Expecting a B::COP object");
+    Perl_croak(aTHX_ "Expecting a B::COP object");
   }
 
 
@@ -167,13 +167,13 @@ void
 Enbugger__nextstate_cop( o )
     SV * o
   CODE:
-    alter_cop( o, OP_NEXTSTATE );
+    alter_cop( aTHX_ o, OP_NEXTSTATE );
 
 void
 Enbugger__dbstate_cop( o )
     SV * o
   CODE:
-    alter_cop( o, OP_DBSTATE );
+    alter_cop( aTHX_ o, OP_DBSTATE );
 
 
 
@@ -229,7 +229,7 @@ of the runtime is cleaned up after loading this module.
 =cut
 
 BOOT:
-    set_debug_from_environment();
+    set_debug_from_environment(aTHX);
 
     if ( PL_DBgv ) {
       if ( DEBUG ) {
