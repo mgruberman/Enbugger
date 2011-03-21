@@ -18,7 +18,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More;
 
 =head1 DESCRIPTION
 
@@ -30,6 +30,18 @@ use Config qw( %Config );
 use File::Basename qw( fileparse );
 use File::Spec::Functions qw( catfile catdir );
 use File::Path qw( rmtree );
+
+# Check for the existence of Devel::NYTProf before continuing
+#
+system $^X, '-e', 'exit ! eval { require Devel::NYTProf }';
+if ($?) {
+    plan( skip_all => "Skipped because Devel::NYTProf isn't installed" );
+    exit;
+}
+else {
+    plan( tests => 14 );
+}
+
 
 # Locate my test script.
 #
@@ -76,7 +88,7 @@ diag( "nytprofcsv: $nytprofcsv" );
 {
     1 while unlink $report_file;
     local $ENV{NYTPROF} = "file=$report_file";
-    system $^X, $script;
+    system $^X, '-Mblib', $script;
     is( $?, 0, "Run $script ok" );
     ok( -e $report_file, "Report file $report_file exists" );
     ok( -f $report_file, "Report file $report_file is a file" );
@@ -102,7 +114,7 @@ ok( -d $report_dir, "Report dir $report_dir is a directory" );
 {
     1 while unlink $report_file;
     local $ENV{NYTPROF} = "use_db_sub=1:file=$report_file";
-    system $^X, $script;
+    system $^X, '-Mblib', $script;
     is( $?, 0, "Run $script ok" );
     ok( -e $report_file, "Report file $report_file exists" );
     ok( -f $report_file, "Report file $report_file is a file" );
