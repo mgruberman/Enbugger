@@ -214,7 +214,7 @@ Enbugger_init_debugger( SV* class )
       PerlIO_printf(Perl_debug_log,"Enbugger: Initializing debugger\n");
     }
 
-    Perl_init_debugger( aTHX );
+    init_debugger();
     PL_perldb = PERLDB_ALL;
 
 
@@ -261,7 +261,7 @@ BOOT:
        * This will need to be reinitialized again later when an actual
        * debugger is present.
        */
-      Perl_init_debugger( aTHX );
+      init_debugger();
     }
 
 MODULE = Enbugger PACKAGE = Enbugger::NYTProf PREFIX = Enbugger_NYTProf_
@@ -287,8 +287,6 @@ Enbugger_NYTProf_instrument_op(... )
     if ( PL_ppaddr[op->op_type] != op->op_ppaddr ) {
       op->op_ppaddr = PL_ppaddr[op->op_type];
     }
-    
-
 
 MODULE = Enbugger		PACKAGE = Enbugger	PREFIX = Enbugger_
 
