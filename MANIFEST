@@ -10,7 +10,7 @@ eg/exception1
 eg/exception2
 eg/on-signal
 Enbugger.xs
-gpl-3.0.txt
+gpl-2.0.txt
 lib/Enbugger.pm
 lib/Enbugger.pod
 lib/Enbugger/ebug.pm
