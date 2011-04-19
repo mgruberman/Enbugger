@@ -95,3 +95,6 @@ e34668c6328eccf78de2aa358c0c52d2a29c16ae cleaning
 
 2f6f0979afd7bcd65df44bcd595dc78be837f41e Provide ROWS/COLUMNS for clients that will probably die otherwise when trying to use Term::Readkey. Hope this works
 193a1cfc6a3152dae1870f2015dea79f310293ba Test's own .pl files dump their errors to STDERR
+
+2.011 Tue Apr 19, 2011
+
