@@ -31,10 +31,8 @@ This is a basic test that OnError traps a bare die() successfully.
 
 
 BEGIN {
-    {
-	no warnings 'once';
-	@DB::typeahead = (q(main::is( "$@", "An exception.\n")),'q');
-    }
+    no warnings 'once';
+    @DB::typeahead = (q(main::is( "$@", "An exception.\n")),'q');
 }
 use Enbugger::OnError;
 

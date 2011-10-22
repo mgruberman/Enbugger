@@ -39,10 +39,8 @@ This is a basic test that OnError traps a USR1 signal
 
 
 BEGIN {
-    {
-	no warnings 'once';
-	@DB::typeahead = (q(main::is( "$@", 'USR1')),'q');
-    }
+    no warnings 'once';
+    @DB::typeahead = (q(main::is( "$@", 'USR1')),'q');
 }
 use Enbugger::OnError 'USR1';
 

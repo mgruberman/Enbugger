@@ -31,8 +31,8 @@ sub import {
     my $hook = $class->DEFAULT_HOOK;
     my $signals =
       @signals
-	? \ @signals
-	  : $class->DEFAULT_SIGNALS;
+        ? \ @signals
+          : $class->DEFAULT_SIGNALS;
 
     $class->hook_signals( $signals, $hook );
     
@@ -53,29 +53,29 @@ sub ExceptionHandler {
     my ( @self_hooked_sigs, %self_hooked_sigs_lu );
     keys %SIG;
     while ( my ( $name, $handler ) = each %SIG ) {
-	if ( ref $handler
-	     and $handler == \ &ExceptionHandler ) {
-	    push @self_hooked_sigs, $name;
-	    $self_hooked_sigs_lu{$name} = undef;
-	}
+        if ( ref $handler
+             and $handler == \ &ExceptionHandler ) {
+            push @self_hooked_sigs, $name;
+            $self_hooked_sigs_lu{$name} = undef;
+        }
     }
 
     # When we are in a __DIE__ handler, do not accept when there is an
     # outer eval scope. Perhaps this should be configurable policy.
     if ( ( $_[0] eq '__DIE__'
-	   or ( not exists $self_hooked_sigs_lu{$_[0]} ) )
-	 and exists $self_hooked_sigs_lu{__DIE__} ) {
-	for (
-	     my $cx = 1;
-	     my ( undef, undef, undef, $function ) = caller $cx;
-	     ++ $cx
-	    ) {
-	    
-	    
-	    if ($function =~ /^\(eval *\d*\)\z/ ) {
-		return 1;
-	    }
-	}
+           or ( not exists $self_hooked_sigs_lu{$_[0]} ) )
+         and exists $self_hooked_sigs_lu{__DIE__} ) {
+        for (
+             my $cx = 1;
+             my ( undef, undef, undef, $function ) = caller $cx;
+             ++ $cx
+            ) {
+            
+            
+            if ($function =~ /^\(eval *\d*\)\z/ ) {
+                return 1;
+            }
+        }
     }
     
     

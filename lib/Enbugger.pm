@@ -34,28 +34,28 @@ BEGIN {
     # from dying from lack of hooks.
     {
 
-	# Generate needed code for stubs.
-	my $src = "package DB;\n";
-	my $need_stubs;
-	for my $sub (qw( DB sub )) {
-	    my $globref = $DB::{$sub};
+        # Generate needed code for stubs.
+        my $src = "package DB;\n";
+        my $need_stubs;
+        for my $sub (qw( DB sub )) {
+            my $globref = $DB::{$sub};
 
-	    # Don't try replacing an existing function.
-	    if ( $globref and defined &$globref ) {
-	    }
-	    else {
-		# Generate a stub method.
-		$src .= "sub $sub {};\n";
-		$need_stubs = 1;
-	    }
-	}
+            # Don't try replacing an existing function.
+            if ( $globref and defined &$globref ) {
+            }
+            else {
+                # Generate a stub method.
+                $src .= "sub $sub {};\n";
+                $need_stubs = 1;
+            }
+        }
 
-	# Create stubs.
-	if ( $need_stubs ) {
-	    $src .= "return 1;\n";
-	    my $ok = eval $src;
-	    die $@ unless $ok;
-	}
+        # Create stubs.
+        if ( $need_stubs ) {
+            $src .= "return 1;\n";
+            my $ok = eval $src;
+            die $@ unless $ok;
+        }
     }
 
 
@@ -102,7 +102,7 @@ our( $DEBUGGER, $DEBUGGER_CLASS, %REGISTERED_DEBUGGERS );
 BEGIN {
     my $src = "no warnings 'redefine';\n";
     for my $sub (qw( stop write )) {
-	$src .= <<"SRC";
+        $src .= <<"SRC";
 #line @{[__LINE__+1]} "@{[__FILE__]}"
             sub $sub {
                 my ( \$class ) = \@_;
@@ -131,7 +131,7 @@ BEGIN { $DefaultDebugger = 'perl5db' }
 
 sub DEBUGGER_CLASS () {
     unless ( defined $DEBUGGER_CLASS ) {
-	Enbugger->load_debugger;
+        Enbugger->load_debugger;
     }
 
     # Install a replacement method that doesn't know how to load
@@ -175,9 +175,9 @@ BEGIN {
     # really just a known empty thing that exists only so I can match
     # against it and thereby know it can be replaced.
     $REGISTERED_DEBUGGERS{''} = {
-				null    => 1,
-				symbols => [qw[ sub DB ]],
-			       };
+                                null    => 1,
+                                symbols => [qw[ sub DB ]],
+                               };
 }
 
 sub load_debugger {
@@ -186,11 +186,11 @@ sub load_debugger {
     # Choose a debugger to load if none was specified.
     if ( not defined $requested_debugger ) {
 
-	# Don't bother if we've already loaded a debugger.
-	return if $DEBUGGER;
+        # Don't bother if we've already loaded a debugger.
+        return if $DEBUGGER;
 
-	# Choose the default.
-	$requested_debugger = $DefaultDebugger;
+        # Choose the default.
+        $requested_debugger = $DefaultDebugger;
     }
 
     # Don't load a debugger if there is one loaded already.
@@ -199,34 +199,34 @@ sub load_debugger {
     # for something that I didn't create.
     my %debugger_symbols =
       map {; $_ => 0b01 }
-	keys %DB::;
+        keys %DB::;
 
 
     # Compare all registered debuggers to our process.
     my %debugger_matches;
     for my $debugger ( keys %REGISTERED_DEBUGGERS ) {
-	
-	# Find the intersection vs the difference.
-	my $intersection = 0;
-	my %match = %debugger_symbols;
-	for my $symbol ( @{$REGISTERED_DEBUGGERS{$debugger}{symbols}} ) {
-	    if ( ( $match{$symbol} |= 0b10 ) == 0b11 ) {
-		++ $intersection;
-	    }
-	}
-	
-	# Score.
-	my $difference =
-	  keys(%match) - $intersection;
-	my $score = $difference / $intersection;
-	
-	$debugger_matches{$debugger} = $score;
+        
+        # Find the intersection vs the difference.
+        my $intersection = 0;
+        my %match = %debugger_symbols;
+        for my $symbol ( @{$REGISTERED_DEBUGGERS{$debugger}{symbols}} ) {
+            if ( ( $match{$symbol} |= 0b10 ) == 0b11 ) {
+                ++ $intersection;
+            }
+        }
+        
+        # Score.
+        my $difference =
+          keys(%match) - $intersection;
+        my $score = $difference / $intersection;
+        
+        $debugger_matches{$debugger} = $score;
     }
 
     # Select the best matching debugger.
     my ( $best_debugger ) =
       sort { $debugger_matches{$a} <=> $debugger_matches{$b} }
-	keys %debugger_matches;
+        keys %debugger_matches;
     
     
     # It is ok to replace the null debugger but an error to replace
@@ -235,10 +235,10 @@ sub load_debugger {
     if ( $REGISTERED_DEBUGGERS{$best_debugger}{null} ) {
     }
     elsif ( $best_debugger eq $requested_debugger ) {
-	return;
+        return;
     }
     else {
-	Carp::confess("Can't replace the existing $best_debugger debugger with $requested_debugger");
+        Carp::confess("Can't replace the existing $best_debugger debugger with $requested_debugger");
     }
 
 
@@ -335,7 +335,7 @@ sub load_source {
 
     # Load all modules.
     for ( grep { defined and -e } values %INC ) {
-	$class->load_file($_);
+        $class->load_file($_);
     }
 
     $class->initialize_dbline;
@@ -347,19 +347,19 @@ sub load_source {
 sub initialize_dbline {
      my $file;
      for ( my $cx = 1; my ( $package, $c_file ) = caller $cx; ++ $cx ) {
-	 if ( $package !~ /^Enbugger/ ) {
-	     $file = $c_file;
-	     last;
-	 }
+         if ( $package !~ /^Enbugger/ ) {
+             $file = $c_file;
+             last;
+         }
      }
 
      if ( not defined $file ) {
-	 # WTF?
-	 *DB::dbline = [];
+         # WTF?
+         *DB::dbline = [];
      }
      else {
-	 no strict 'refs';
-	 *DB::dbline = \@{"main::_<$file"};
+         no strict 'refs';
+         *DB::dbline = \@{"main::_<$file"};
      }
 }
 
@@ -371,27 +371,27 @@ sub load_file {
     
     # The symbols by which we'll know ye.
     my $base_symname = "_<$file";
-    my $symname	  = "main::$base_symname";
+    my $symname          = "main::$base_symname";
     
     no strict 'refs';
 
     if ( not @$symname and -f $file ) {
-	# Read the source.
-	# Open the file.
-	my $fh;
-	if ( not open $fh, '<', $file ) {
-	    Carp::croak( "Can't open $file for reading: $!" );
-	}
-	
-	# Load our source code. All source must be installed as at least PVIV or
-	# some asserts in op.c may fail. Later, I'll assign better pointers to each
-	# line in instrument_op.
-	local $/ = "\n";
-	@$symname = (
-		     undef,
-		     map { Scalar::Util::dualvar( 0, $_ ) }
-		     readline $fh
-		    );
+        # Read the source.
+        # Open the file.
+        my $fh;
+        if ( not open $fh, '<', $file ) {
+            Carp::croak( "Can't open $file for reading: $!" );
+        }
+        
+        # Load our source code. All source must be installed as at least PVIV or
+        # some asserts in op.c may fail. Later, I'll assign better pointers to each
+        # line in instrument_op.
+        local $/ = "\n";
+        @$symname = (
+                     undef,
+                     map { Scalar::Util::dualvar( 0, $_ ) }
+                     readline $fh
+                    );
     }
     
     $$symname ||= $file;
@@ -426,32 +426,32 @@ sub instrument_op {
     # Must be a B::COP node.
     if ( $$op and B::class( $op ) eq 'COP' ) {
 
-	# @{"_<$file"} entries where there are COP entries are
-	# dualvars of pointers to the COP nodes that will get
-	# OPf_SPECIAL toggled to indicate breakpoints.
-	{
-	    my $file = $op->file;
-	    my $line = $op->line;
-	    my $ptr  = $$op;
+        # @{"_<$file"} entries where there are COP entries are
+        # dualvars of pointers to the COP nodes that will get
+        # OPf_SPECIAL toggled to indicate breakpoints.
+        {
+            my $file = $op->file;
+            my $line = $op->line;
+            my $ptr  = $$op;
 
-	    my $source = do {
-		no strict 'refs';
-		\ @{"main::_<$file"};
-	    };
-	    if ( defined $source->[$line] ) {
-		Scalar::Util::dualvar( $ptr, $source->[$line] );
-	    }
-	}
+            my $source = do {
+                no strict 'refs';
+                \ @{"main::_<$file"};
+            };
+            if ( defined $source->[$line] ) {
+                Scalar::Util::dualvar( $ptr, $source->[$line] );
+            }
+        }
 
-	#print $op->file ."\t".$op->line."\t".$o->stash->NAME."\t";
-	# Disable or enable debugging for this opcode.
-	if ( $op->stash->NAME =~ /^(?=[DE])(?:DB|Enbugger)(?:::|\z)/ ) {
-	    #print 'next';
-	    Enbugger::_nextstate_cop( $op );
-	}
-	else {
-	    Enbugger::_dbstate_cop( $op );
-	}
+        #print $op->file ."\t".$op->line."\t".$o->stash->NAME."\t";
+        # Disable or enable debugging for this opcode.
+        if ( $op->stash->NAME =~ /^(?=[DE])(?:DB|Enbugger)(?:::|\z)/ ) {
+            #print 'next';
+            Enbugger::_nextstate_cop( $op );
+        }
+        else {
+            Enbugger::_dbstate_cop( $op );
+        }
     }
 }
 
@@ -463,8 +463,8 @@ sub import {
     my $class = shift @_;
 
     if ( @_ ) {
-	my $selected_debugger = shift @_;
-	$DefaultDebugger = $selected_debugger;
+        my $selected_debugger = shift @_;
+        $DefaultDebugger = $selected_debugger;
     }
 }
 
@@ -488,6 +488,5 @@ Enbugger->_compile_with_dbstate();
 ## tab-width: 8
 ## End:
 
-no warnings 'void';		## no critic
+no warnings 'void'; ## no critic
 'But this is the internet, dear, stupid is one of our prime exports.';
-

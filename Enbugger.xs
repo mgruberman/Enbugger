@@ -133,7 +133,7 @@ compile_with_dbstate() {
 
 
 
-MODULE = Enbugger		PACKAGE = Enbugger	PREFIX = Enbugger_
+MODULE = Enbugger PACKAGE = Enbugger PREFIX = Enbugger_
 
 PROTOTYPES: DISABLE
 
@@ -234,12 +234,12 @@ BOOT:
 
     if ( PL_DBgv ) {
       if ( DEBUG ) {
-	PerlIO_printf(Perl_debug_log,"Enbugger: Debugger is already loaded\n" );
+        PerlIO_printf(Perl_debug_log,"Enbugger: Debugger is already loaded\n" );
       }
     }
     else {
       if ( DEBUG ) {
-	PerlIO_printf(Perl_debug_log,"Enbugger: Initializing debugger during Enbugger boot\n");
+        PerlIO_printf(Perl_debug_log,"Enbugger: Initializing debugger during Enbugger boot\n");
       }
       
       /*
@@ -289,7 +289,7 @@ Enbugger_NYTProf_instrument_op(... )
       op->op_ppaddr = PL_ppaddr[op->op_type];
     }
 
-MODULE = Enbugger		PACKAGE = Enbugger	PREFIX = Enbugger_
+MODULE = Enbugger PACKAGE = Enbugger PREFIX = Enbugger_
 
 ## Local Variables:
 ## mode: c

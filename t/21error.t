@@ -31,10 +31,8 @@ This is a basic test that OnError ignores an eval wrapped die().
 
 use vars qw( $Caught );
 BEGIN {
-    {
-	no warnings 'once';
-	@DB::typeahead = ('$main::Caught = 1','c');
-    }
+    no warnings 'once';
+    @DB::typeahead = ('$main::Caught = 1','c');
 }
 use Enbugger::OnError;
 

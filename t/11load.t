@@ -34,19 +34,19 @@ triggered
 
 
 my @options = (
-	       [ $^X, '-Mblib',       't/11load.pl',                                                       ],
-	       [ $^X, '-Mblib',       't/11load.pl',                                          '--noimport' ],
-	       [ $^X, '-Mblib',       't/11load.pl',                        '--load_perl5db',              ],
-	       [ $^X, '-Mblib',       't/11load.pl',                        '--load_perl5db', '--noimport' ],
-	       [ $^X, '-Mblib',       't/11load.pl', '--import', 'perl5db',                                ],
-	       [ $^X, '-Mblib',       't/11load.pl', '--import', 'perl5db', '--load_perl5db',              ],
-	       [ $^X, '-Mblib', '-d', 't/11load.pl',                                                       ],
-	       [ $^X, '-Mblib', '-d', 't/11load.pl',                                          '--noimport' ],
-	       [ $^X, '-Mblib', '-d', 't/11load.pl',                        '--load_perl5db',              ],
-	       [ $^X, '-Mblib', '-d', 't/11load.pl',                        '--load_perl5db', '--noimport' ],
-	       [ $^X, '-Mblib', '-d', 't/11load.pl', '--import', 'perl5db',                                ],
-	       [ $^X, '-Mblib', '-d', 't/11load.pl', '--import', 'perl5db', '--load_perl5db',              ],
-	      );
+    [ $^X, '-Mblib',       't/11load.pl',                                                       ],
+    [ $^X, '-Mblib',       't/11load.pl',                                          '--noimport' ],
+    [ $^X, '-Mblib',       't/11load.pl',                        '--load_perl5db',              ],
+    [ $^X, '-Mblib',       't/11load.pl',                        '--load_perl5db', '--noimport' ],
+    [ $^X, '-Mblib',       't/11load.pl', '--import', 'perl5db',                                ],
+    [ $^X, '-Mblib',       't/11load.pl', '--import', 'perl5db', '--load_perl5db',              ],
+    [ $^X, '-Mblib', '-d', 't/11load.pl',                                                       ],
+    [ $^X, '-Mblib', '-d', 't/11load.pl',                                          '--noimport' ],
+    [ $^X, '-Mblib', '-d', 't/11load.pl',                        '--load_perl5db',              ],
+    [ $^X, '-Mblib', '-d', 't/11load.pl',                        '--load_perl5db', '--noimport' ],
+    [ $^X, '-Mblib', '-d', 't/11load.pl', '--import', 'perl5db',                                ],
+    [ $^X, '-Mblib', '-d', 't/11load.pl', '--import', 'perl5db', '--load_perl5db',              ],
+);
 
 
 for my $args ( @options ) {

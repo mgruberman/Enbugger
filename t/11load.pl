@@ -59,18 +59,20 @@ After loading Enbugger, C<< Enbugger->load_perl5db >> will also be called.
 =cut
 
 
+    $ENV{PERLDB_OPTS} = 'noTTY';
+
     # Option parsing.
     my $import      = 1;
     my @import      = ();
     my $loadPerl5Db = 0;
     my $onError     = 0;
     GetOptions(
-	       help         => sub { exec {'perldoc'} 'perldoc', $0 },
-	       noimport     => sub { $import = 0 },
-	       'import=s'   => \@import,
-	       load_perl5db => \ $loadPerl5Db,
-	       onerror      => \ $onError,
-	      )
+        help         => sub { exec {'perldoc'} 'perldoc', $0 },
+        noimport     => sub { $import = 0 },
+        'import=s'   => \@import,
+        load_perl5db => \ $loadPerl5Db,
+        onerror      => \ $onError,
+    )
       or exec {'perldoc'} 'perldoc', $0;
 
     # Promote some options into constants.
@@ -81,30 +83,30 @@ After loading Enbugger, C<< Enbugger->load_perl5db >> will also be called.
     # The test is whether the debugger runs and is controlled by my
     # test commands here.
     {
-	no warnings 'once';
-	push @DB::typeahead, '$main::Ok = 1', 'c', 'q';
+        no warnings 'once';
+        push @DB::typeahead, '$main::Ok = 1', 'c', 'q';
     }
 
 
     # All our output will go to *OUT. If this program was given a
     # paramter, we accept it as file that we should write our output too.
     {
-	my ( $file ) = shift @ARGV;
-	if ( defined $file ) {
-	    open OUT, '>', $file
-	      or die "Can't open $file for writing: $!";
-	}
-	else {
-	    *OUT = *STDOUT;
-	}
+        my ( $file ) = shift @ARGV;
+        if ( defined $file ) {
+            open OUT, '>', $file
+              or die "Can't open $file for writing: $!";
+        }
+        else {
+            *OUT = *STDOUT;
+        }
 
-	# OUTPUT is HOT.
-	select *OUT;
-	$| = 1;
+        # OUTPUT is HOT.
+        select *OUT;
+        $| = 1;
 
-	# Things written to STDERR should also go to our single *OUT.
-	no warnings 'once';
-	*STDERR = $DB::OUT = $DB::LINEINFO = *OUT;
+        # Things written to STDERR should also go to our single *OUT.
+        no warnings 'once';
+        *STDERR = $DB::OUT = $DB::LINEINFO = *OUT;
     }
 
 
@@ -120,14 +122,14 @@ After loading Enbugger, C<< Enbugger->load_perl5db >> will also be called.
     # up here when it became obvious that I wanted to optionally avoid
     # importing anything.
     if ( $onError ) {
-	require Enbugger::OnError;
-	Enbugger::OnError->import;
+        require Enbugger::OnError;
+        Enbugger::OnError->import;
     }
     else {
-	require Enbugger;
-	if ( $import ) {
-	    Enbugger->import( @import );
-	}
+        require Enbugger;
+        if ( $import ) {
+            Enbugger->import( @import );
+        }
     }
 
     # Now dropping into normal run-time.

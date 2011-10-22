@@ -26,9 +26,9 @@ WriteMakefile(
     AUTHOR        => 'WhitePages.com, Inc <whitepage@cpan.org>',
     LICENSE       => 'perl',
     PREREQ_PM     => {
-		      'Test::More' => 0,
-		      'B::Utils' => 0,
-		     },
+              'Test::More' => 0,
+              'B::Utils' => 0,
+             },
     EXE_FILES => [qw(
         bin/screen-server
         bin/screen-server-backend
