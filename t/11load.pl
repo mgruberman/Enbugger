@@ -20,6 +20,7 @@ use strict;
 use warnings;
 use Getopt::Long qw( GetOptions );
 use vars         qw( $Ok );
+use lib          qw( ./t/ );
 
 BEGIN {
 

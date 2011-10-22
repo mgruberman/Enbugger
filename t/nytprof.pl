@@ -1,3 +1,5 @@
+use lib          qw( ./t/ );
+
 require Enbugger;
 Enbugger->load_debugger( 'NYTProf' );
 

@@ -78,18 +78,8 @@ sub run {
         # Add new OS/environment fiddling here.
     }
     
-    # Provide some rows/column defaults so Term::Readkey in perl5db.pl won't die at CPAN
-    # users.
-    local $ENV{COLUMNS} = $ENV{COLUMNS};
-    local $ENV{ROWS} = $ENV{ROWS};
-    if ( FAKE_TERMINAL ) {
-        $ENV{COLUMNS} ||= 80;
-        $ENV{ROWS}    ||= 25;
-    }
-    else {
-        delete $ENV{COLUMNS} if ! defined $ENV{COLUMNS};
-        delete $ENV{ROWS} if ! defined $ENV{ROWS};
-    }
+    delete @ENV{qw(COLUMNS ROWS)};
+    $ENV{PERLDB_OPTS} = 'noTTY';
 
     # Run the test program.
     system { $args[0] } @args;
