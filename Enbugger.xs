@@ -76,7 +76,8 @@ alter_cop( pTHX_ SV *rv, I32 op_type )
 	 && SvOK( sv = SvRV(rv) )
 	 && SvIOK(sv) )) {
     if ( DEBUG ) {
-      PerlIO_printf(Perl_debug_log, "Enbugger: SvOK(o)=%d SvROK(o)=%d SvIOK(SvRV(o))=%d\n",SvOK(sv),SvROK(sv),SvIOK(SvRV(sv)));
+      PerlIO_printf(Perl_debug_log, "Enbugger: SvOK(o)=%"UVuf" SvROK(o)=%"UVuf" SvIOK(SvRV(o))=%"UVuf"\n",
+          SvOK(sv), SvROK(sv), SvIOK(SvRV(sv)));
     }
     Perl_croak(aTHX_ "Expecting a B::COP object");
   }
