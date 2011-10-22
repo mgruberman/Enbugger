@@ -44,7 +44,7 @@ set_debug_from_environment(pTHX)
   env_hv = get_hv("main::ENV",0);
   if ( ! env_hv ) {
     /* Does this ever happen? */
-    Perl_croak(aTHX_ "Couldn't fetch %ENV hash");
+    Perl_croak(aTHX_ "Couldn't fetch %%ENV hash");
   }
 
   /* Fetch $ENV{ENBUGGER_DEBUG}. */
