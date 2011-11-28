@@ -39,7 +39,7 @@ WriteMakefile(
     )],
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Enbugger-*' },
-    META_ADD => {
+    META_MERGE => {
         no_index => {
             directory => [
                 't',
