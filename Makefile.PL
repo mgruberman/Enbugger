@@ -23,7 +23,7 @@ WriteMakefile(
     NAME          => 'Enbugger',
     VERSION_FROM  => 'lib/Enbugger.pm',
     ABSTRACT_FROM => 'lib/Enbugger.pod',
-    AUTHOR        => 'WhitePages.com, Inc <whitepage@cpan.org>',
+    AUTHOR        => 'Josh ben Jore <jjore@cpan.org>',
     LICENSE       => 'perl',
     PREREQ_PM     => {
               'Test::More' => 0,
