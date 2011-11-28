@@ -465,6 +465,18 @@ Joshua ben Jore E<gt>jjore@cpan.orgE<lt>
 
 
 
+=head1 ACKNOWLEDGEMENTS
+
+=over
+
+=item Brock Wilcox (awwaiid)
+
+=item R. Bernstein (rocky)
+
+=back
+
+
+
 
 =head1 COPYRIGHT AND LICENCE
 
