@@ -72,6 +72,7 @@ sub _stop {
     $DB::signal = 2;
     # Use at least the default debug flags.
     $^P |= 0x33f;
+    $DB::event = 'debugger-call';
     $DB::in_debugger = 0;
     return;
 }
