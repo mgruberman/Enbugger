@@ -86,10 +86,10 @@ sub _stop {
 
 1 if $DB::OUT;
 sub _write {
-    my $class = shift @_;
 
-    print { $DB::OUT } @_;
-
+    for my $c (@DB::clients) {
+	$c->output(@_);
+    }
     return;
 }
 
@@ -111,7 +111,7 @@ sub _write {
 1 if %Enbugger::RegisteredDebuggers;
 $Enbugger::RegisteredDebuggers{trepan}{symbols} = [qw[
     DB
-    sub
+    subs
     eval_with_return
     save
 ]];
