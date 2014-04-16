@@ -356,10 +356,11 @@ sub initialize_dbline {
      if ( not defined $file ) {
          # WTF?
          *DB::dbline = [];
+         *DB::dbline = {}; # TODO magic(L)
      }
      else {
          no strict 'refs';
-         *DB::dbline = \@{"main::_<$file"};
+         *DB::dbline = \*{"main::_<$file"};
      }
 }
 
@@ -375,7 +376,9 @@ sub load_file {
     
     no strict 'refs';
 
-    if ( not @$symname and -f $file ) {
+    my $glob = \*$symname;
+
+    if ( ! *$symname{ARRAY} && -f $file ) {
         # Read the source.
         # Open the file.
         my $fh;
@@ -387,11 +390,16 @@ sub load_file {
         # some asserts in op.c may fail. Later, I'll assign better pointers to each
         # line in instrument_op.
         local $/ = "\n";
-        @$symname = (
-                     undef,
-                     map { Scalar::Util::dualvar( 0, $_ ) }
-                     readline $fh
-                    );
+        *$glob = [
+            map { Scalar::Util::dualvar( 0, $_ ) }
+            ( undef, readline $fh )
+        ];
+    }
+
+    if ( ! *$glob{HASH} ) {
+        my %breakpoints;
+        Enbugger::set_magic_dbfile(\%breakpoints);
+        *$glob = \%breakpoints;
     }
     
     $$symname ||= $file;

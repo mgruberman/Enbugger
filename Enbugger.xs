@@ -223,6 +223,27 @@ Enbugger_init_debugger( SV* class )
 
 =pod
 
+Sets RMAGIC on the %_<$filename hashes.
+
+=cut
+
+void
+Enbugger_set_magic_dbfile(rv)
+    SV *rv
+  INIT:
+    HV *hv;
+  CODE:
+    assert(SvROK(rv));
+
+    hv = (HV*) SvRV(rv);
+    assert(SVt_PVHV == SvTYPE(hv));
+    hv_magic(hv, NULL, PERL_MAGIC_dbfile);
+
+
+
+
+=pod
+
 Sets up some things thatE<apos>ll be needed for debugging later on. These
 may need to be moved into individual "off" and "on" functions so more
 of the runtime is cleaned up after loading this module.
