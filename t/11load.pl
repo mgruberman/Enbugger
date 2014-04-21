@@ -92,7 +92,7 @@ After loading Enbugger, C<< Enbugger->load_perl5db >> will also be called.
 
 
     # All our output will go to *OUT. If this program was given a
-    # paramter, we accept it as file that we should write our output too.
+    # parameter, we accept it as file that we should write our output too.
     {
         my ( $file ) = shift @ARGV;
         if ( defined $file ) {
