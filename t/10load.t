@@ -19,6 +19,8 @@
 use strict;
 use warnings;
 use Test::More tests => 1;
+use lib 't';
+require 'reset_perms.pl';
 
 =head1 NAME
 

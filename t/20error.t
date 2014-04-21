@@ -19,6 +19,7 @@
 use strict;
 use warnings;
 use Test::More tests => 1;
+use lib 't';
 
 =head1 DESCRIPTION
 
@@ -33,6 +34,8 @@ This is a basic test that OnError traps a bare die() successfully.
 BEGIN {
     no warnings 'once';
     @DB::typeahead = (q(main::is( "$@", "An exception.\n")),'q');
+
+    require 'reset_perms.pl';
 }
 use Enbugger::OnError;
 

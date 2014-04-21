@@ -19,6 +19,7 @@
 use strict;
 use warnings;
 use Test::More tests => 2;
+use lib 't';
 
 =head1 DESCRIPTION
 
@@ -33,6 +34,8 @@ use vars qw( $Caught );
 BEGIN {
     no warnings 'once';
     @DB::typeahead = ('$main::Caught = 1','c');
+
+    require 'reset_perms.pl';
 }
 use Enbugger::OnError;
 

@@ -24,6 +24,8 @@ use lib          qw( ./t/ );
 
 BEGIN {
 
+    require 'reset_perms.pl';
+
 =head1 DESCRIPTION
 
 This test attempts to run the perl5db debugger, gives it some

@@ -1,5 +1,6 @@
 use lib          qw( ./t/ );
 
+require 'reset_perms.pl';
 require Enbugger;
 Enbugger->load_debugger( 'NYTProf' );
 

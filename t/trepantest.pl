@@ -13,6 +13,7 @@ my $opts =
     readline    => 0,
     highlight   => 0
 };
+require 'reset_perms.pl';
 require Enbugger; 
 Enbugger->load_debugger('trepan');
 

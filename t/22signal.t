@@ -20,6 +20,7 @@ use strict;
 use warnings;
 use Test::More tests => 1;
 use Config '%Config';
+use lib 't';
 
 my @SignalNames = split ' ', $Config{sig_name};
 my %SignalNames =
@@ -41,6 +42,8 @@ This is a basic test that OnError traps a USR1 signal
 BEGIN {
     no warnings 'once';
     @DB::typeahead = (q(main::is( "$@", 'USR1')),'q');
+
+    require 'reset_perms.pl';
 }
 use Enbugger::OnError 'USR1';
 
