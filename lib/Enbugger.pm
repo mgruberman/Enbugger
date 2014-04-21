@@ -446,7 +446,7 @@ sub instrument_op {
                 no strict 'refs';
                 \ @{"main::_<$file"};
             };
-            if ( defined $source->[$line] ) {
+            if ( $ptr ) {
                 $source->[$line] = Scalar::Util::dualvar( $ptr, $source->[$line] );
             }
         }
