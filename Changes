@@ -98,7 +98,8 @@ e34668c6328eccf78de2aa358c0c52d2a29c16ae cleaning
 
 2.011 Sun Mar 20, 2011
 
-931bf0170b36f007fdda1f7195cc63fdd54c3866 2.011
+0159a66 2.011
+2669705 2.011
 48aa9f6d45fa4d9d8c3d912791046c34b5784564 Declare PERL_CORE for perl-5.13.10+
 d689f2ecff625a76b471f244eb5e1ea33612e791 Only run NYTProf test when NYTProf is available
 3a15287409d9bcf97a0382e85ad5091de426e559 s/Perl_init_debugger/init_debugger/ because of PERL_CORE
@@ -165,3 +166,25 @@ f24cabd44d432d53e9f4bc0c5285bd01cfbb2ebc Check for failure to launch xterm
 c6119a16d7fd2546616aceb075e9c616b2d3fbd9 Add tmux-server
 2f9f9c7f13170fa0d0ad89313030cc293f6cfff3 Add bin/screen-server and bin/xterm-server
 e6455a4dc4b8e6899fb4f94ceafa26bd260e2dd6 Executable flag on for eg/exception2
+
+2.012
+
+3dacadc 2.012
+c2fbeab Fixup MANIFEST
+9e1017f Handle noTTY
+3f89c0a Untabify
+5a23491 Substitute %d for %UVuf in format for U32 parameters
+56363b5 Escape % in format
+
+2.013
+
+Many thanks:
+  Robert Messer @ IntelliSurvey
+  Erkan Yilmaz
+  rocky
+  Brock Wilcox - awwaiid
+
+* Breakpoints seem to work
+* Save eval strings
+* Support trepan debugger
+* Support ebug debugger
