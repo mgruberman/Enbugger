@@ -424,7 +424,12 @@ sub instrument_runtime {
     # Load the source code for all loaded files. Too bad about (eval 1)
     # though. This doesn't work. Why not!?!
     $class->load_source;
-    
+
+    # PL_DBsingle = GvSV((gv_fetchpvs("DB::single", GV_ADDMULTI, SVt_PV)));
+    # if (!SvIOK(PL_DBsingle))
+    #     sv_setiv(PL_DBsingle, 0);
+    $DB::single = 0 if ! defined $DB::single;
+
     B::Utils::walkallops_simple( \ &Enbugger::instrument_op );
 }
 
