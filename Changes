@@ -188,3 +188,8 @@ Many thanks:
 * Save eval strings
 * Support trepan debugger
 * Support ebug debugger
+
+2.015
+
+* breakpoints on function names
+  TODO: the r command
