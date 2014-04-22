@@ -354,9 +354,9 @@ sub initialize_dbline {
      }
 
      if ( not defined $file ) {
-         # WTF?
          *DB::dbline = [];
-         *DB::dbline = {}; # TODO magic(L)
+         *DB::dbline = {};
+         Enbugger::set_magic_dbfile( \%DB::dbline );
      }
      else {
          no strict 'refs';
