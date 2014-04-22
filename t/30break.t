@@ -18,7 +18,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More;
 use lib 't';
 use Test::Enbugger 'run_with_tmp';
 
@@ -45,8 +45,21 @@ my @options = (
     [ $^X, '-Mblib', '-d', 't/30break.pl',                        '--load_perl5db', '--noimport' ],
     [ $^X, '-Mblib', '-d', 't/30break.pl', '--import', 'perl5db',                                ],
     [ $^X, '-Mblib', '-d', 't/30break.pl', '--import', 'perl5db', '--load_perl5db',              ],
-);
 
+    [ $^X, '-Mblib',       't/31break.pl',                                                       ],
+    [ $^X, '-Mblib',       't/31break.pl',                                          '--noimport' ],
+    [ $^X, '-Mblib',       't/31break.pl',                        '--load_perl5db',              ],
+    [ $^X, '-Mblib',       't/31break.pl',                        '--load_perl5db', '--noimport' ],
+    [ $^X, '-Mblib',       't/31break.pl', '--import', 'perl5db',                                ],
+    [ $^X, '-Mblib',       't/31break.pl', '--import', 'perl5db', '--load_perl5db',              ],
+    [ $^X, '-Mblib', '-d', 't/31break.pl',                                                       ],
+    [ $^X, '-Mblib', '-d', 't/31break.pl',                                          '--noimport' ],
+    [ $^X, '-Mblib', '-d', 't/31break.pl',                        '--load_perl5db',              ],
+    [ $^X, '-Mblib', '-d', 't/31break.pl',                        '--load_perl5db', '--noimport' ],
+    [ $^X, '-Mblib', '-d', 't/31break.pl', '--import', 'perl5db',                                ],
+    [ $^X, '-Mblib', '-d', 't/31break.pl', '--import', 'perl5db', '--load_perl5db',              ],
+);
+plan( tests => 0+@options );
 
 for my $args ( @options ) {
     my $test_output = run_with_tmp( @$args );
