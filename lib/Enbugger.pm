@@ -82,7 +82,7 @@ use Carp ();
 use Scalar::Util ();
 
 # Public class settings.
-use vars qw( $DefaultDebugger );
+use vars qw( $DefaultDebugger %DBsub );
 
 use constant (); # just to load it.
 
@@ -440,7 +440,17 @@ sub instrument_runtime {
     #     sv_setiv(PL_DBsignal, 0);
     $DB::signal = 0 if ! defined $DB::signal;
 
+    # Walk over all optrees.
+    # * Transform nextstate COP* nodes to dbstate COP* nodes as appropriate
+    # * Set ${"main::_<$file"}[X] array elements with COP* pointers
+    # * Capture function name start/end line numbers
     B::Utils::walkallops_simple( \ &Enbugger::instrument_op );
+
+    # Provide %DB::sub.
+    %DB::sub =
+        map { $_ => sprintf '%s:%d-%d', @{$DBsub{$_}} }
+        keys %DBsub;
+    undef %DBsub;
 }
 
 
@@ -456,19 +466,22 @@ sub instrument_op {
         # @{"_<$file"} entries where there are COP entries are
         # dualvars of pointers to the COP nodes that will get
         # OPf_SPECIAL toggled to indicate breakpoints.
-        {
-            my $file = $op->file;
-            my $line = $op->line;
-            my $ptr  = $$op;
+	my $ptr  = $$op;
+	my $source = do {
+	    no strict 'refs';
+	    \ @{"main::_<$B::Utils::file"};
+	};
+	if ( $ptr ) {
+	    $source->[$B::Utils::line] = Scalar::Util::dualvar( $ptr, $source->[$B::Utils::line] );
+	}
 
-            my $source = do {
-                no strict 'refs';
-                \ @{"main::_<$file"};
-            };
-            if ( $ptr ) {
-                $source->[$line] = Scalar::Util::dualvar( $ptr, $source->[$line] );
-            }
-        }
+	if ($DBsub{$B::Utils::sub}) {
+	    $DBsub{$B::Utils::sub}[1] = $B::Utils::line if $B::Utils::line < $DBsub{$B::Utils::sub}[1];
+	    $DBsub{$B::Utils::sub}[2] = $B::Utils::line if $B::Utils::line > $DBsub{$B::Utils::sub}[2];
+	}
+	else {
+	    $DBsub{$B::Utils::sub} = [ $B::Utils::file, ($B::Utils::line) x 2 ];
+	}
 
         #print $op->file ."\t".$op->line."\t".$o->stash->NAME."\t";
         # Disable or enable debugging for this opcode.
