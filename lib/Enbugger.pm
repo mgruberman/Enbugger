@@ -435,6 +435,11 @@ sub instrument_runtime {
     #     sv_setiv(PL_DBtrace, 0);
     $DB::trace = 0 if ! defined $DB::trace;
 
+    # PL_DBsignal = GvSV((gv_fetchpvs("DB::signal", GV_ADDMULTI, SVt_PV)));
+    # if (!SvIOK(PL_DBsignal))
+    #     sv_setiv(PL_DBsignal, 0);
+    $DB::signal = 0 if ! defined $DB::signal;
+
     B::Utils::walkallops_simple( \ &Enbugger::instrument_op );
 }
 
