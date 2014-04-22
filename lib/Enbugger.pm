@@ -417,7 +417,10 @@ sub load_file {
 sub instrument_runtime {
     # Now do the *real* work.
     my ( $class ) = @_;
-    
+
+    # PL_DBgv = gv_fetchpvs("DB::DB", GV_ADDMULTI, SVt_PVGV);
+    eval 'sub DB::DB {}' if ! defined &DB::DB;
+
     # Load the source code for all loaded files. Too bad about (eval 1)
     # though. This doesn't work. Why not!?!
     $class->load_source;
