@@ -193,3 +193,8 @@ Many thanks:
 
 * breakpoints on function names
   TODO: the r command
+
+2.016
+
+* Un-break Devel::Trepan
+* Depend on B::Utils-0.25+
