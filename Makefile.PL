@@ -27,7 +27,7 @@ WriteMakefile(
     LICENSE       => 'perl',
     PREREQ_PM     => {
               'Test::More' => 0,
-              'B::Utils' => 0,
+              'B::Utils' => '0.25',
              },
     EXE_FILES => [qw(
         bin/screen-server
